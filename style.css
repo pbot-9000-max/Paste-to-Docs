@@ -266,6 +266,64 @@ h1 {
   position: relative;
 }
 
+.editor-body.dragging .drop-overlay {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.editor-body.dragging textarea {
+  opacity: 0.15;
+}
+
+.drop-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.92);
+  border: 2px dashed var(--violet-400);
+  border-radius: var(--radius-md);
+  color: var(--violet-600);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 2;
+  margin: 6px;
+}
+
+.drop-overlay svg {
+  opacity: 0.6;
+}
+
+.drop-overlay p {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--violet-600);
+}
+
+.upload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--violet-600);
+  background: var(--violet-50);
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--violet-200);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upload-btn:hover {
+  background: var(--violet-100);
+  border-color: var(--violet-300);
+}
+
 textarea {
   display: block;
   width: 100%;

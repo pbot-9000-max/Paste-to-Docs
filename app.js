@@ -308,6 +308,61 @@
   var btn = document.getElementById('downloadBtn');
   var btnText = btn.querySelector('.btn-text');
   var charCount = document.getElementById('charCount');
+  var editorBody = document.querySelector('.editor-body');
+  var dropOverlay = document.getElementById('dropOverlay');
+  var fileInput = document.getElementById('fileInput');
+
+  function readFile(file) {
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      input.value = e.target.result;
+      var len = input.value.length;
+      charCount.textContent = len;
+      btn.disabled = false;
+      dropOverlay.textContent = '';
+      dropOverlay.innerHTML = '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><p>Drop .md or .txt file here</p>';
+    };
+    reader.readAsText(file);
+  }
+
+  // ── Drag and drop ──────────────────────────────────────
+
+  editorBody.addEventListener('dragenter', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    editorBody.classList.add('dragging');
+  });
+
+  editorBody.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  });
+
+  editorBody.addEventListener('dragleave', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.relatedTarget && editorBody.contains(e.relatedTarget)) return;
+    editorBody.classList.remove('dragging');
+  });
+
+  editorBody.addEventListener('drop', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    editorBody.classList.remove('dragging');
+    var file = e.dataTransfer.files[0];
+    if (!file) return;
+    readFile(file);
+  });
+
+  // ── File input ─────────────────────────────────────────
+
+  fileInput.addEventListener('change', function () {
+    if (!fileInput.files[0]) return;
+    readFile(fileInput.files[0]);
+    fileInput.value = '';
+  });
+
+  // ── Input / conversion ─────────────────────────────────
 
   input.addEventListener('input', function () {
     var len = input.value.length;

@@ -55,9 +55,18 @@
         </div>
         <div class="editor-body">
           <textarea id="input" placeholder="Paste AI response here..." spellcheck="false"></textarea>
+          <div class="drop-overlay" id="dropOverlay">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <p>Drop .md or .txt file here</p>
+          </div>
+          <input type="file" id="fileInput" accept=".md,.txt,.markdown" hidden>
         </div>
         <div class="editor-footer">
           <span class="char-count"><span id="charCount">0</span> characters</span>
+          <label for="fileInput" class="upload-btn" id="uploadBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload .md
+          </label>
           <span class="privacy-badge">100% private — all processing is local</span>
         </div>
       </div>
@@ -133,8 +142,8 @@
         </div>
         <div class="step">
           <div class="step-number">2</div>
-          <h3>Paste here</h3>
-          <p>Paste into the editor — all processing happens in your browser, nothing leaves your machine</p>
+          <h3>Paste or upload</h3>
+          <p>Paste AI output, or drag/drop a .md / .txt file — all processing stays in your browser</p>
         </div>
         <div class="step-divider">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>

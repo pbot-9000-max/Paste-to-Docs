@@ -307,21 +307,27 @@ h1 {
 .upload-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 12px;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 36px;
+  font-size: 16px;
   font-weight: 600;
-  color: var(--violet-600);
-  background: var(--violet-50);
-  padding: 5px 10px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--violet-200);
+  font-family: var(--font-sans);
+  color: var(--violet-700);
+  background: #fff;
+  border: 2px solid var(--violet-300);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s;
 }
 
 .upload-btn:hover {
+  background: var(--violet-50);
+  border-color: var(--violet-400);
+}
+
+.upload-btn:active {
   background: var(--violet-100);
-  border-color: var(--violet-300);
 }
 
 .actions {

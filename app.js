@@ -535,6 +535,7 @@
   var fileInput = document.getElementById('fileInput');
   var styleToggle = document.getElementById('styleToggle');
   var preview = document.getElementById('preview');
+  var previewArea = document.querySelector('.Preview-area');
 
   var styled = false;
 
@@ -564,11 +565,12 @@
 
   function updatePreview() {
     var text = input.value.trim();
-    if (!text) { preview.innerHTML = ''; preview.className = 'preview-panel'; return; }
+    if (!text) { preview.innerHTML = ''; preview.className = 'preview-panel'; previewArea.style.display = 'none'; return; }
     S = isDarkMode ? S_dark : S_light;
     preview.className = 'preview-panel' + (styled ? '' : ' doc-preview');
     var html = markdownToHtml(text, styled);
     preview.innerHTML = html;
+    previewArea.style.display = 'block';
   }
 
   function readFile(file) {

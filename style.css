@@ -434,6 +434,7 @@ h1 {
 .Preview-area {
   max-width: 960px;
   margin: 0 auto;
+  display: none;
 }
 
 .Preview-sep {

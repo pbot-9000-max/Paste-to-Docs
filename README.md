@@ -4,7 +4,7 @@
 
 **paste-to-docs** converts AI-formatted responses (headings, bold, lists, tables, code blocks, links) into a properly structured Word document. No reformatting. No manual cleanup. All in your browser.
 
-**[→ Open the web app](https://pbot-9000-max.github.io/Paste-to-Docs)**
+**[→ Open the web app](https://paste-to-docs.vercel.app)**
 
 ---
 
@@ -39,7 +39,7 @@
 1. Copy from AI ──→ 2. Paste here ──→ 3. Download .docx
 ```
 
-Open **[paste-to-docs](https://pbot-9000-max.github.io/Paste-to-Docs)**, paste your AI response, and click download. Open the `.docx` in Word, Google Docs, or Pages — everything is already formatted.
+Open **[paste-to-docs](https://paste-to-docs.vercel.app)**, paste your AI response, and click download. Open the `.docx` in Word, Google Docs, or Pages — everything is already formatted.
 
 ---
 

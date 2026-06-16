@@ -110,10 +110,11 @@
   var st = docx.ShadingType;
   var ut = docx.UnderlineType;
   var wt = docx.WidthType;
+  var bs = docx.BorderStyle;
 
   function buildDocx(html) {
     var parser = new DOMParser();
-    var dom = parser.parseFromString('<body>' + html + '</body>', 'text/html');
+    var dom = parser.parseFromString(html, 'text/html');
     var children = [];
 
     for (var el = dom.body.firstElementChild; el; el = el.nextElementSibling) {
@@ -159,12 +160,20 @@
         }
         case 'pre': {
           var code = el.textContent;
-          children.push(new docx.Paragraph({
-            spacing: { before: 120, after: 120 },
-            indent: { left: 430 },
-            shading: { type: st.CLEAR, fill: 'F1F3F4' },
-            children: [new docx.TextRun({ text: code, font: 'Consolas', size: 18 })],
-          }));
+          var lines = code.split('\n');
+          if (lines[lines.length - 1] === '') lines.pop();
+          for (var l = 0; l < lines.length; l++) {
+            children.push(new docx.Paragraph({
+              spacing: {
+                before: l === 0 ? 120 : 0,
+                after:  l === lines.length - 1 ? 120 : 0,
+                line: 240,
+              },
+              indent: { left: 430 },
+              shading: { type: st.CLEAR, fill: 'F1F3F4' },
+              children: [new docx.TextRun({ text: lines[l], font: 'Consolas', size: 20 })],
+            }));
+          }
           break;
         }
         case 'blockquote':
@@ -210,7 +219,6 @@
             runs.push(new docx.TextRun({
               text: node.textContent,
               font: 'Consolas',
-              size: 18,
               shading: { type: st.CLEAR, fill: 'F1F3F4' },
             }));
             break;
@@ -256,7 +264,18 @@
       }
     }
     if (!rows.length) return null;
-    return new docx.Table({ rows: rows });
+    return new docx.Table({
+      rows: rows,
+      width: { size: '100%' },
+      borders: {
+        top:    { style: bs.SINGLE, size: 1, color: '999999' },
+        bottom: { style: bs.SINGLE, size: 1, color: '999999' },
+        left:   { style: bs.SINGLE, size: 1, color: '999999' },
+        right:  { style: bs.SINGLE, size: 1, color: '999999' },
+        insideHorizontal: { style: bs.SINGLE, size: 1, color: '999999' },
+        insideVertical:   { style: bs.SINGLE, size: 1, color: '999999' },
+      },
+    });
   }
 
   function buildRow(tr) {

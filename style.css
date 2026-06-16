@@ -151,27 +151,6 @@ main {
   padding: 12px 0 32px;
 }
 
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--violet-700);
-  background: var(--violet-100);
-  padding: 6px 14px;
-  border-radius: 100px;
-  margin-bottom: 10px;
-  letter-spacing: 0.3px;
-}
-
-.badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--violet-500);
-}
-
 h1 {
   font-size: clamp(32px, 5.5vw, 56px);
   font-weight: 800;
@@ -1137,10 +1116,6 @@ footer {
   --violet-100: #1e064a;
 }
 
-[data-theme="dark"] .hero-badge {
-  color: var(--violet-300);
-  background: #1e064a;
-}
 
 [data-theme="dark"] body::before {
   opacity: 0.15;

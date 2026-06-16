@@ -1,33 +1,34 @@
 {
   "name": "paste-to-docs",
   "version": "0.1.0",
-  "description": "Chrome extension that auto-formats AI responses (Claude, ChatGPT, Gemini) when pasting into Google Docs",
+  "description": "Paste from Claude, ChatGPT, or Gemini — download a clean .docx file",
   "scripts": {
-    "icons": "node icons/generate-icons.js",
-    "lint": "eslint content.js popup.js",
-    "pack": "zip -r paste-to-docs.zip manifest.json content.js popup.html popup.js icons/*.png --exclude icons/generate-icons.js"
+    "icons": "node extension/icons/generate-icons.js",
+    "lint": "eslint extension/content.js extension/popup.js",
+    "pack": "zip -r paste-to-docs.zip extension/",
+    "start": "npx serve ."
   },
   "devDependencies": {
     "eslint": "^8.0.0",
     "sharp": "^0.33.0"
   },
   "keywords": [
-    "chrome-extension",
-    "google-docs",
-    "markdown",
     "claude",
     "chatgpt",
     "gemini",
+    "google-docs",
+    "markdown",
+    "docx",
     "productivity",
     "formatting"
   ],
   "license": "MIT",
   "repository": {
-    "type": "git",
-    "url": "https://github.com/yourusername/paste-to-docs.git"
+    "url": "https://github.com/pbot-9000-max/Paste-to-Docs.git"
   },
-  "homepage": "https://github.com/yourusername/paste-to-docs#readme",
+  "homepage": "https://github.com/pbot-9000-max/Paste-to-Docs#readme",
   "bugs": {
-    "url": "https://github.com/yourusername/paste-to-docs/issues"
+    "url": "https://github.com/pbot-9000-max/Paste-to-Docs/issues"
   }
+}
 }

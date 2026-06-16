@@ -183,6 +183,83 @@ h1 {
   line-height: 1.7;
 }
 
+/* ── PH badge ───────────────────────────────────────── */
+
+.ph-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--amber-600);
+  background: linear-gradient(135deg, #fffbeb, #fef3c7);
+  padding: 8px 18px;
+  border-radius: 100px;
+  text-decoration: none;
+  margin-bottom: 20px;
+  border: 1px solid var(--amber-200);
+  transition: all 0.25s;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+}
+
+.ph-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.25);
+  border-color: var(--amber-300);
+}
+
+[data-theme="dark"] .ph-badge {
+  background: linear-gradient(135deg, #451a03, #5c2a06);
+  border-color: #78350f;
+  color: var(--amber-300);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
+}
+
+[data-theme="dark"] .ph-badge:hover {
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.2);
+  border-color: var(--amber-500);
+}
+
+/* ── Hero glow ──────────────────────────────────────── */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-glow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.4;
+}
+
+.hero-glow--violet {
+  top: -120px;
+  left: -80px;
+  background: var(--violet-400);
+}
+
+.hero-glow--amber {
+  bottom: -80px;
+  right: -60px;
+  background: var(--amber-300);
+}
+
+[data-theme="dark"] .hero-glow--violet {
+  opacity: 0.2;
+  background: var(--violet-600);
+}
+
+[data-theme="dark"] .hero-glow--amber {
+  opacity: 0.15;
+  background: var(--amber-500);
+}
+
 /* ── Source badges ──────────────────────────────────── */
 
 .source-badges {

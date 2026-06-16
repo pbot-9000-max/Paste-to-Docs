@@ -72,7 +72,7 @@ nav {
   align-items: center;
   justify-content: space-between;
   padding: 16px 24px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   width: 100%;
 }
@@ -145,7 +145,7 @@ nav {
 
 main {
   flex: 1;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 24px;
   width: 100%;
@@ -198,7 +198,7 @@ h1 {
 .hero-subtitle {
   font-size: 17px;
   color: var(--gray-500);
-  max-width: 640px;
+  max-width: 780px;
   margin: 0 auto 12px;
   line-height: 1.7;
 }
@@ -250,7 +250,7 @@ h1 {
 /* ── Converter card ──────────────────────────────────── */
 
 .converter-card {
-  max-width: 720px;
+  max-width: 960px;
   margin: 0 auto;
   background: var(--surface);
   border: 1px solid var(--gray-200);
@@ -432,7 +432,7 @@ h1 {
 /* ── Preview panel ────────────────────────────────────── */
 
 .preview-panel {
-  max-width: 720px;
+  max-width: 960px;
   margin: 14px auto 0;
   background: var(--surface);
   border: 1px solid var(--gray-200);

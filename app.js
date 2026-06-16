@@ -276,12 +276,12 @@
       width: { size: 100, type: wt.PERCENTAGE },
       columnWidths: Array(numCols).fill(colWidth),
       borders: {
-        top:    { style: bs.SINGLE, size: 1, color: '999999' },
-        bottom: { style: bs.SINGLE, size: 1, color: '999999' },
-        left:   { style: bs.SINGLE, size: 1, color: '999999' },
-        right:  { style: bs.SINGLE, size: 1, color: '999999' },
-        insideHorizontal: { style: bs.SINGLE, size: 1, color: '999999' },
-        insideVertical:   { style: bs.SINGLE, size: 1, color: '999999' },
+        top:    { style: bs.SINGLE, size: 4, color: '999999' },
+        bottom: { style: bs.SINGLE, size: 4, color: '999999' },
+        left:   { style: bs.SINGLE, size: 4, color: '999999' },
+        right:  { style: bs.SINGLE, size: 4, color: '999999' },
+        insideHorizontal: { style: bs.SINGLE, size: 4, color: '999999' },
+        insideVertical:   { style: bs.SINGLE, size: 4, color: '999999' },
       },
     });
   }

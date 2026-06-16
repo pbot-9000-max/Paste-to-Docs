@@ -277,12 +277,12 @@ function buildDocxTable(tableEl) {
     width: { size: 100, type: WidthType.PERCENTAGE },
     columnWidths: Array(numCols).fill(colWidth),
     borders: {
-      top:    { style: BorderStyle.SINGLE, size: 1, color: '999999' },
-      bottom: { style: BorderStyle.SINGLE, size: 1, color: '999999' },
-      left:   { style: BorderStyle.SINGLE, size: 1, color: '999999' },
-      right:  { style: BorderStyle.SINGLE, size: 1, color: '999999' },
-      insideHorizontal: { style: BorderStyle.SINGLE, size: 1, color: '999999' },
-      insideVertical:   { style: BorderStyle.SINGLE, size: 1, color: '999999' },
+      top:    { style: BorderStyle.SINGLE, size: 4, color: '999999' },
+      bottom: { style: BorderStyle.SINGLE, size: 4, color: '999999' },
+      left:   { style: BorderStyle.SINGLE, size: 4, color: '999999' },
+      right:  { style: BorderStyle.SINGLE, size: 4, color: '999999' },
+      insideHorizontal: { style: BorderStyle.SINGLE, size: 4, color: '999999' },
+      insideVertical:   { style: BorderStyle.SINGLE, size: 4, color: '999999' },
     },
   });
 }

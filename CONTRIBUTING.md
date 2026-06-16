@@ -1,71 +1,40 @@
-# Contributing to paste-to-docs
+# Contributing
 
-Thank you for helping fix one of the most common daily frustrations in AI-assisted work.
+## Web app
 
-## Getting started
+The web app (`index.html`, `app.js`, `style.css`) has no build step — open `index.html` in a browser to run it.
 
 ```bash
-git clone https://github.com/yourusername/paste-to-docs.git
-cd paste-to-docs
+git clone https://github.com/pbot-9000-max/Paste-to-Docs.git
+cd Paste-to-Docs
+npm start     # serves at http://localhost:3000
 ```
 
-Then load the extension in Chrome (Developer mode → Load unpacked → select this folder).
+### How it works
 
-> **Note**: Extension icons are already tracked in git. If you redesign the icon, install dependencies (`npm install`) and run `npm run icons` to regenerate PNGs from `icons/icon.svg`.
+1. `index.html` — provides a paste textarea and download button
+2. `app.js` — `markdownToHtml()` converts AI markdown to clean HTML, then `buildDocx()` maps each HTML element to a `docx` library primitive (paragraph, heading, table, etc.)
+3. `style.css` — minimal styling, nothing framework-specific
 
-## How to contribute
+### Adding new formatting
 
-### Improving source detection
+Two places to touch:
 
-The most impactful contributions are better detection signatures for Claude, ChatGPT, Gemini, or new AI sources.
+- **`markdownToHtml()`** in `app.js` — add a new block parser or inline pattern for the markdown syntax
+- **`buildDocx()`** in `app.js` — add a case for the new HTML element, mapping it to the corresponding `docx` library class
 
-If you find a case where paste-to-docs doesn't detect your source:
+### Code style
 
-1. Open DevTools in the page you're copying from
-2. In the Console, run: `navigator.clipboard.read().then(items => items.forEach(item => console.log(item.types)))`
-3. Copy the response, then read the HTML: 
-   ```javascript
-   navigator.clipboard.read().then(items => 
-     items[0].getType('text/html').then(blob => blob.text().then(console.log))
-   )
-   ```
-4. Open an issue and paste the HTML structure (redact sensitive content, keep class names and `data-` attributes).
+- Vanilla JS, ES2020+, no build step
+- Single IIFE in `app.js` to avoid global scope
+- Descriptive function names; comments for non-obvious logic
 
-### Adding new formatting elements
+## Chrome extension
 
-Conversion logic lives in `content.js` in two places:
+The Chrome extension lives in `extension/`. See `extension/` README for details.
 
-- `walkNode()` — handles HTML input (add a new `case` to the switch)
-- `markdownToHtml()` — handles plain-text markdown (add a new block parser or inline pattern)
+## Pull requests
 
-Please add a test case comment above any new `case` showing the before/after.
-
-### New target platforms
-
-The HTML output from `htmlToClean()` / `markdownToHtml()` is standard semantic HTML. A new platform only requires:
-
-1. Detecting the correct host URL in `manifest.json` host_permissions
-2. Injecting `content.js` into the new platform's document
-3. Verifying the paste interception works for that platform's input handling
-
-## Code style
-
-- Vanilla JavaScript, no build step required
-- ES2020+ (Chrome extension context, no need to target old browsers)
-- Single IIFE in `content.js` to avoid global scope pollution
-- Descriptive function names; inline comments for non-obvious logic
-
-## Pull request checklist
-
-- [ ] Tested in Chrome with Developer mode
-- [ ] Paste works in a Google Doc with at least one AI source
-- [ ] No new external dependencies added to `content.js`
-- [ ] `popup.js` and `manifest.json` updated if permissions changed
-
-## Reporting bugs
-
-Please include:
-- Which AI source you were copying from
-- What the formatted output looked like (screenshot welcome)
-- Chrome version (`chrome://settings/help`)
-- Extension version (popup → bottom-left)
+- [ ] Tested locally — open `index.html` and verify conversion
+- [ ] No new external dependencies (CDN-loaded libraries go in `index.html`)
+- [ ] If changing the extension, verify in Chrome Developer mode

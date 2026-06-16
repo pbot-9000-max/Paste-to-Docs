@@ -1,0 +1,33 @@
+{
+  "name": "paste-to-docs",
+  "version": "0.1.0",
+  "description": "Chrome extension that auto-formats AI responses (Claude, ChatGPT, Gemini) when pasting into Google Docs",
+  "scripts": {
+    "icons": "node icons/generate-icons.js",
+    "lint": "eslint content.js popup.js",
+    "pack": "zip -r paste-to-docs.zip manifest.json content.js popup.html popup.js icons/*.png --exclude icons/generate-icons.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "sharp": "^0.33.0"
+  },
+  "keywords": [
+    "chrome-extension",
+    "google-docs",
+    "markdown",
+    "claude",
+    "chatgpt",
+    "gemini",
+    "productivity",
+    "formatting"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/paste-to-docs.git"
+  },
+  "homepage": "https://github.com/yourusername/paste-to-docs#readme",
+  "bugs": {
+    "url": "https://github.com/yourusername/paste-to-docs/issues"
+  }
+}

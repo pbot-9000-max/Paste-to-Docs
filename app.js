@@ -1,6 +1,27 @@
 (function () {
   'use strict';
 
+  // ── Scroll animations ────────────────────────────────────────────────────
+
+  (function initScrollAnimations() {
+    if (!window.IntersectionObserver) return;
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      var els = document.querySelectorAll(
+        '.feature-card, .step-timeline-item, .step-content h3'
+      );
+      els.forEach(function (el) { observer.observe(el); });
+    });
+  })();
+
   // ── Markdown → HTML ──────────────────────────────────────────────────────
 
   function esc(s) {
@@ -250,7 +271,7 @@
               children: [new docx.TextRun({
                 text: el.textContent,
                 font: 'Calibri',
-                size: 30,
+                size: 22,
                 color: '374151',
               })],
             }));
@@ -269,8 +290,8 @@
                 spacing: { after: 80 },
                 indent: { left: 720, hanging: 360 },
                 children: [
-                  new docx.TextRun({ text: '\u2022 ', font: 'Symbol', size: 30, color: '374151' }),
-                  new docx.TextRun({ text: lis[j].textContent, font: 'Calibri', size: 30, color: '374151' }),
+                  new docx.TextRun({ text: '\u2022 ', font: 'Symbol', size: 22, color: '374151' }),
+                  new docx.TextRun({ text: lis[j].textContent, font: 'Calibri', size: 22, color: '374151' }),
                 ],
               }));
             } else {
@@ -291,8 +312,8 @@
                 spacing: { after: 80 },
                 indent: { left: 720, hanging: 360 },
                 children: [
-                  new docx.TextRun({ text: (k + 1) + '. ', font: 'Calibri', size: 30, color: '374151' }),
-                  new docx.TextRun({ text: lis[k].textContent, font: 'Calibri', size: 30, color: '374151' }),
+                  new docx.TextRun({ text: (k + 1) + '. ', font: 'Calibri', size: 22, color: '374151' }),
+                  new docx.TextRun({ text: lis[k].textContent, font: 'Calibri', size: 22, color: '374151' }),
                 ],
               }));
             } else {
@@ -318,7 +339,7 @@
                 indent: { left: 430 },
                 shading: codeShading,
                 borders: l === 0 ? { left: { style: bs.SINGLE, size: 12, color: '6366F1' } } : { left: { style: bs.SINGLE, size: 12, color: '6366F1' } },
-                children: [new docx.TextRun({ text: lines[l], font: 'Consolas', size: 27, color: '1E293B' })],
+                children: [new docx.TextRun({ text: lines[l], font: 'Consolas', size: 22, color: '1E293B' })],
               }));
             } else {
               children.push(new docx.Paragraph({
@@ -343,7 +364,7 @@
               children: [new docx.TextRun({
                 text: el.textContent,
                 font: 'Calibri',
-                size: 30,
+                size: 22,
                 color: '374151',
               })],
             }));
@@ -388,7 +409,7 @@
                 indent: { left: 430 },
                 shading: { type: st.CLEAR, fill: 'F8FAFC' },
                 borders: { left: { style: bs.SINGLE, size: 12, color: '6366F1' } },
-                children: [new docx.TextRun({ text: lines[m], font: 'Consolas', size: 27, color: '1E293B' })],
+                children: [new docx.TextRun({ text: lines[m], font: 'Consolas', size: 22, color: '1E293B' })],
               }));
             }
           }
@@ -500,7 +521,7 @@
             children: [new docx.TextRun({
               text: td.textContent,
               font: 'Calibri',
-              size: 28,
+              size: 22,
               color: cellIsHeader ? '0F172A' : '374151',
               bold: !!cellIsHeader,
             })],

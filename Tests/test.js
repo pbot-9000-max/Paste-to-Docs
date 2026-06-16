@@ -40,16 +40,16 @@ var S_dark = {
   h2: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:22px;font-weight:700;color:#60A5FA;letter-spacing:-0.015em;line-height:1.3;margin:32px 0 12px 0",
   h3: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:17px;font-weight:600;color:#D1D5DB;letter-spacing:-0.01em;line-height:1.4;margin:24px 0 10px 0",
   h4: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:600;color:#9CA3AF;line-height:1.4;margin:20px 0 8px 0",
-  p: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:#D1D5DB;line-height:1.75;margin:0 0 16px 0",
-  inlineCode: "font-family:monospace;font-size:13.5px;background:#1E293B;color:#E2E8F0;padding:2px 6px;border-radius:4px;border:1px solid #334155",
-  codeBlock: "font-family:monospace;font-size:13.5px;color:#E2E8F0;background:#1E293B;border:1px solid #334155;border-left:3px solid #818CF8;border-radius:0 6px 6px 0;padding:16px 20px;margin:20px 0;display:block;white-space:pre;overflow-x:auto;line-height:1.6",
-  codeLang: "font-family:monospace;font-size:10px;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;display:block",
-  blockquote: "border-left:3px solid #818CF8;background:#1E1B4B;margin:16px 0;padding:12px 18px;border-radius:0 6px 6px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:#D1D5DB;line-height:1.75",
-  ul: "margin:0 0 16px 0;padding-left:24px",
-  ol: "margin:0 0 16px 0;padding-left:24px",
-  li: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:#D1D5DB;line-height:1.75;margin:0 0 6px 0",
-  a: "color:#60A5FA;text-decoration:underline",
-  table: "border-collapse:collapse;margin:20px 0;width:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px",
+    p: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:#D1D5DB;line-height:1.75;margin:0 0 16px 0",
+    inlineCode: "font-family:monospace;font-size:13.5px;background:#1E293B;color:#E2E8F0;padding:2px 6px;border-radius:4px;border:1px solid #334155",
+    codeBlock: "font-family:monospace;font-size:13.5px;color:#E2E8F0;background:#1E293B;border:1px solid #334155;border-left:3px solid #818CF8;border-radius:0 6px 6px 0;padding:16px 20px;margin:20px 0;display:block;white-space:pre;overflow-x:auto;line-height:1.6",
+    codeLang: "font-family:monospace;font-size:10px;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;display:block",
+    blockquote: "border-left:3px solid #818CF8;background:#1E1B4B;margin:16px 0;padding:12px 18px;border-radius:0 6px 6px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:#D1D5DB;line-height:1.75",
+    ul: "margin:0 0 16px 0;padding-left:24px",
+    ol: "margin:0 0 16px 0;padding-left:24px",
+    li: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:#D1D5DB;line-height:1.75;margin:0 0 6px 0",
+    a: "color:#60A5FA;text-decoration:underline",
+    table: "border-collapse:collapse;margin:20px 0;width:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px",
   th: "background:#1E293B;color:#F1F5F9;font-weight:600;text-align:left;padding:10px 14px;border:1px solid #374151;letter-spacing:-0.01em",
   td: "color:#D1D5DB;padding:9px 14px;border:1px solid #374151;vertical-align:top;line-height:1.6",
   tdAlt: "color:#D1D5DB;padding:9px 14px;border:1px solid #374151;vertical-align:top;line-height:1.6;background:#1E293B",
@@ -238,7 +238,7 @@ function buildDocx(html, styled) {
             children: [new docx.TextRun({
               text: el.textContent,
               font: 'Calibri',
-              size: 30,
+              size: 22,
               color: '374151',
             })],
           }));
@@ -257,8 +257,8 @@ function buildDocx(html, styled) {
               spacing: { after: 80 },
               indent: { left: 720, hanging: 360 },
               children: [
-                new docx.TextRun({ text: '\u2022 ', font: 'Symbol', size: 30, color: '374151' }),
-                new docx.TextRun({ text: lis[j].textContent, font: 'Calibri', size: 30, color: '374151' }),
+                new docx.TextRun({ text: '\u2022 ', font: 'Symbol', size: 22, color: '374151' }),
+                new docx.TextRun({ text: lis[j].textContent, font: 'Calibri', size: 22, color: '374151' }),
               ],
             }));
           } else {
@@ -279,8 +279,8 @@ function buildDocx(html, styled) {
               spacing: { after: 80 },
               indent: { left: 720, hanging: 360 },
               children: [
-                new docx.TextRun({ text: (k + 1) + '. ', font: 'Calibri', size: 30, color: '374151' }),
-                new docx.TextRun({ text: lis[k].textContent, font: 'Calibri', size: 30, color: '374151' }),
+                new docx.TextRun({ text: (k + 1) + '. ', font: 'Calibri', size: 22, color: '374151' }),
+                new docx.TextRun({ text: lis[k].textContent, font: 'Calibri', size: 22, color: '374151' }),
               ],
             }));
           } else {
@@ -305,7 +305,7 @@ function buildDocx(html, styled) {
               indent: { left: 430 },
               shading: { type: ShadingType.CLEAR, fill: 'F8FAFC' },
               borders: { left: { style: BorderStyle.SINGLE, size: 12, color: '6366F1' } },
-              children: [new docx.TextRun({ text: lines[l], font: 'Consolas', size: 27, color: '1E293B' })],
+              children: [new docx.TextRun({ text: lines[l], font: 'Consolas', size: 22, color: '1E293B' })],
             }));
           } else {
             children.push(new docx.Paragraph({
@@ -330,7 +330,7 @@ function buildDocx(html, styled) {
             children: [new docx.TextRun({
               text: el.textContent,
               font: 'Calibri',
-              size: 30,
+              size: 22,
               color: '374151',
             })],
           }));
@@ -374,7 +374,7 @@ function buildDocx(html, styled) {
               indent: { left: 430 },
               shading: { type: ShadingType.CLEAR, fill: 'F8FAFC' },
               borders: { left: { style: BorderStyle.SINGLE, size: 12, color: '6366F1' } },
-              children: [new docx.TextRun({ text: lines[m], font: 'Consolas', size: 27, color: '1E293B' })],
+              children: [new docx.TextRun({ text: lines[m], font: 'Consolas', size: 22, color: '1E293B' })],
             }));
           }
         }
@@ -467,7 +467,7 @@ function buildDocxTable(tableEl, styled) {
             children: [new docx.TextRun({
               text: td.textContent,
               font: 'Calibri',
-              size: 28,
+              size: 22,
               color: cellIsHeader ? '0F172A' : '374151',
               bold: !!cellIsHeader,
             })],

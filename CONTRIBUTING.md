@@ -7,11 +7,11 @@ Thank you for helping fix one of the most common daily frustrations in AI-assist
 ```bash
 git clone https://github.com/yourusername/paste-to-docs.git
 cd paste-to-docs
-npm install
-node icons/generate-icons.js
 ```
 
 Then load the extension in Chrome (Developer mode → Load unpacked → select this folder).
+
+> **Note**: Extension icons are already tracked in git. If you redesign the icon, install dependencies (`npm install`) and run `npm run icons` to regenerate PNGs from `icons/icon.svg`.
 
 ## How to contribute
 

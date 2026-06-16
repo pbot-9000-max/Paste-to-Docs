@@ -80,8 +80,6 @@ User copies from Claude/ChatGPT/Gemini
 ```bash
 git clone https://github.com/yourusername/paste-to-docs.git
 cd paste-to-docs
-npm install
-node icons/generate-icons.js   # generates PNG icons from icons/icon.svg
 ```
 
 Then in Chrome:

@@ -14,6 +14,7 @@ function esc(s) {
 
 function inline(text) {
   return text
+    .replace(/\\([\\`*_{}[\]()#+.!-])/g, '$1')
     .replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/__(.+?)__/g, '<strong>$1</strong>')

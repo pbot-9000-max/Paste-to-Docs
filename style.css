@@ -452,7 +452,7 @@ h1 {
 textarea {
   display: block;
   width: 100%;
-  min-height: 200px;
+  min-height: 240px;
   padding: 20px;
   font-size: 14px;
   font-family: var(--font-mono);

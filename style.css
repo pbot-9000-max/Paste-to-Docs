@@ -48,6 +48,7 @@
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+  --surface: #fff;
 }
 
 html {
@@ -107,6 +108,38 @@ nav {
   border-color: var(--gray-300);
   background: var(--gray-100);
 }
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.theme-btn:hover {
+  color: var(--gray-900);
+  border-color: var(--gray-300);
+  background: var(--gray-100);
+}
+
+.theme-btn .sun-icon { display: none; }
+.theme-btn .moon-icon { display: block; }
+
+[data-theme="dark"] .theme-btn .sun-icon { display: block; }
+[data-theme="dark"] .theme-btn .moon-icon { display: none; }
 
 /* ── Main layout ────────────────────────────────────── */
 
@@ -219,7 +252,7 @@ h1 {
 .converter-card {
   max-width: 720px;
   margin: 0 auto;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--gray-200);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
@@ -314,7 +347,7 @@ h1 {
   font-weight: 600;
   font-family: var(--font-sans);
   color: var(--violet-700);
-  background: #fff;
+  background: var(--surface);
   border: 2px solid var(--violet-300);
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -401,7 +434,7 @@ h1 {
 .preview-panel {
   max-width: 720px;
   margin: 20px auto 0;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--gray-200);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
@@ -542,7 +575,7 @@ textarea::placeholder {
 }
 
 .feature-card {
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--gray-200);
   border-radius: var(--radius-md);
   padding: 24px 20px;
@@ -717,6 +750,43 @@ footer {
     font-size: 12px;
     padding: 5px 10px;
   }
+}
+
+/* ── Dark mode ────────────────────────────────────────── */
+
+[data-theme="dark"] {
+  --surface: #292524;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -2px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.4), 0 4px 6px -4px rgba(0,0,0,0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.4), 0 8px 10px -6px rgba(0,0,0,0.3);
+  --violet-100: #2e1065;
+}
+
+[data-theme="dark"] .hero-badge {
+  color: var(--violet-300);
+}
+
+[data-theme="dark"] .upload-btn {
+  color: var(--violet-300);
+  border-color: var(--violet-500);
+}
+
+[data-theme="dark"] .upload-btn:hover {
+  background: #1c1917;
+  border-color: var(--violet-400);
+}
+
+[data-theme="dark"] .upload-btn:active {
+  background: #292524;
+}
+
+[data-theme="dark"] .drop-overlay {
+  background: rgba(28, 25, 23, 0.92);
+}
+
+[data-theme="dark"] .drop-overlay p {
+  color: var(--violet-400);
 }
 
 /* ── Loading state ───────────────────────────────────── */

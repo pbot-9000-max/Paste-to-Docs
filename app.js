@@ -9,7 +9,7 @@
 
   // ── Style constants ─────────────────────────────────────────────────────
 
-  var S = {
+  var S_light = {
     h1: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:28px;font-weight:700;color:#111827;letter-spacing:-0.025em;line-height:1.25;margin:40px 0 16px 0;border-bottom:2px solid #E2E8F0;padding-bottom:12px",
     h2: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:22px;font-weight:700;color:#1D4ED8;letter-spacing:-0.015em;line-height:1.3;margin:32px 0 12px 0",
     h3: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:17px;font-weight:600;color:#374151;letter-spacing:-0.01em;line-height:1.4;margin:24px 0 10px 0",
@@ -29,6 +29,29 @@
     tdAlt: "color:#374151;padding:9px 14px;border:1px solid #E2E8F0;vertical-align:top;line-height:1.6;background:#FAFBFC",
     hr: "border:none;border-top:1px solid #E2E8F0;margin:32px 0",
   };
+
+  var S_dark = {
+    h1: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:28px;font-weight:700;color:#F8FAFC;letter-spacing:-0.025em;line-height:1.25;margin:40px 0 16px 0;border-bottom:2px solid #334155;padding-bottom:12px",
+    h2: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:22px;font-weight:700;color:#60A5FA;letter-spacing:-0.015em;line-height:1.3;margin:32px 0 12px 0",
+    h3: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:17px;font-weight:600;color:#D1D5DB;letter-spacing:-0.01em;line-height:1.4;margin:24px 0 10px 0",
+    h4: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;font-weight:600;color:#9CA3AF;line-height:1.4;margin:20px 0 8px 0",
+    p: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:#D1D5DB;line-height:1.75;margin:0 0 16px 0",
+    inlineCode: "font-family:monospace;font-size:13.5px;background:#1E293B;color:#E2E8F0;padding:2px 6px;border-radius:4px;border:1px solid #334155",
+    codeBlock: "font-family:monospace;font-size:13.5px;color:#E2E8F0;background:#1E293B;border:1px solid #334155;border-left:3px solid #818CF8;border-radius:0 6px 6px 0;padding:16px 20px;margin:20px 0;display:block;white-space:pre;overflow-x:auto;line-height:1.6",
+    codeLang: "font-family:monospace;font-size:10px;color:#6B7280;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:8px;display:block",
+    blockquote: "border-left:3px solid #818CF8;background:#1E1B4B;margin:16px 0;padding:12px 18px;border-radius:0 6px 6px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:#D1D5DB;line-height:1.75",
+    ul: "margin:0 0 16px 0;padding-left:24px",
+    ol: "margin:0 0 16px 0;padding-left:24px",
+    li: "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:#D1D5DB;line-height:1.75;margin:0 0 6px 0",
+    a: "color:#60A5FA;text-decoration:underline",
+    table: "border-collapse:collapse;margin:20px 0;width:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px",
+    th: "background:#1E293B;color:#F1F5F9;font-weight:600;text-align:left;padding:10px 14px;border:1px solid #374151;letter-spacing:-0.01em",
+    td: "color:#D1D5DB;padding:9px 14px;border:1px solid #374151;vertical-align:top;line-height:1.6",
+    tdAlt: "color:#D1D5DB;padding:9px 14px;border:1px solid #374151;vertical-align:top;line-height:1.6;background:#1E293B",
+    hr: "border:none;border-top:1px solid #334155;margin:32px 0",
+  };
+
+  var S = S_light;
 
   function inline(text, styled) {
     var codeStyle = styled ? ' style="' + S.inlineCode + '"' : '';
@@ -73,7 +96,7 @@
 
     var hStyles = {};
     if (styled) {
-      hStyles[1] = ' style="margin:0 0 16px 0;border-bottom:2px solid #E2E8F0;padding-bottom:12px;' + S.h1.replace(/margin:[^;]+;/, '') + '"';
+      hStyles[1] = ' style="margin:0 0 16px 0;' + S.h1.replace(/margin:[^;]+;/, '') + '"';
       hStyles[2] = ' style="' + S.h2 + '"';
       hStyles[3] = ' style="' + S.h3 + '"';
       hStyles[4] = ' style="' + S.h4 + '"';
@@ -515,9 +538,34 @@
 
   var styled = false;
 
+  // ── Theme toggle ─────────────────────────────────────────────────────────
+
+  var themeToggle = document.getElementById('themeToggle');
+  var savedTheme = localStorage.getItem('theme');
+  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var isDarkMode = savedTheme ? savedTheme === 'dark' : prefersDark;
+  var html = document.documentElement;
+  if (isDarkMode) html.setAttribute('data-theme', 'dark');
+
+  S = isDarkMode ? S_dark : S_light;
+
+  themeToggle.addEventListener('click', function () {
+    isDarkMode = !isDarkMode;
+    if (isDarkMode) {
+      html.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      html.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+    }
+    S = isDarkMode ? S_dark : S_light;
+    updatePreview();
+  });
+
   function updatePreview() {
     var text = input.value.trim();
     if (!text) { preview.innerHTML = ''; return; }
+    S = isDarkMode ? S_dark : S_light;
     var html = markdownToHtml(text, styled);
     preview.innerHTML = html;
   }
@@ -592,6 +640,7 @@
   });
 
   btn.addEventListener('click', async function () {
+    S = S_light; // always produce light-themed docx
     var text = input.value.trim();
     if (!text) return;
 

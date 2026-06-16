@@ -155,7 +155,7 @@ main {
 
 .hero {
   text-align: center;
-  padding: 24px 0 40px;
+  padding: 12px 0 32px;
 }
 
 .hero-badge {
@@ -168,7 +168,7 @@ main {
   background: var(--violet-100);
   padding: 6px 14px;
   border-radius: 100px;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
   letter-spacing: 0.3px;
 }
 
@@ -185,7 +185,7 @@ h1 {
   line-height: 1.15;
   letter-spacing: -1.5px;
   color: var(--gray-900);
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .highlight {
@@ -198,8 +198,8 @@ h1 {
 .hero-subtitle {
   font-size: 17px;
   color: var(--gray-500);
-  max-width: 560px;
-  margin: 0 auto 20px;
+  max-width: 640px;
+  margin: 0 auto 12px;
   line-height: 1.7;
 }
 
@@ -209,7 +209,7 @@ h1 {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
 }
 
@@ -368,7 +368,7 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 14px;
 }
 
 /* ── Style toggle ─────────────────────────────────────── */
@@ -378,7 +378,7 @@ h1 {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 14px;
 }
 
 .switch {
@@ -433,7 +433,7 @@ h1 {
 
 .preview-panel {
   max-width: 720px;
-  margin: 20px auto 0;
+  margin: 14px auto 0;
   background: var(--surface);
   border: 1px solid var(--gray-200);
   border-radius: var(--radius-lg);
@@ -452,7 +452,7 @@ h1 {
 textarea {
   display: block;
   width: 100%;
-  min-height: 280px;
+  min-height: 200px;
   padding: 20px;
   font-size: 14px;
   font-family: var(--font-mono);
@@ -708,7 +708,7 @@ footer {
   }
 
   .hero {
-    padding: 16px 0 32px;
+    padding: 8px 0 24px;
   }
 
   .hero-subtitle {

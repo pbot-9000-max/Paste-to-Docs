@@ -299,7 +299,7 @@
     const rows = lines.filter((l) => !/^\|[-:| ]+\|$/.test(l.trim()));
     if (!rows.length) return '';
 
-    const cells = (r) => r.split('|').map((c) => c.trim()).filter(Boolean);
+    const cells = (r) => r.split('\\|').join('\x00').split('|').map((c) => c.trim().replace(/\x00/g, '|')).filter(Boolean);
     const [head, ...body] = rows;
 
     const ths = cells(head)

@@ -22,7 +22,7 @@
   function buildTable(lines) {
     const rows = lines.filter(function (l) { return !/^\|[-:| ]+\|$/.test(l.trim()); });
     if (!rows.length) return '';
-    var cells = function (r) { return r.split('|').map(function (c) { return c.trim(); }).filter(Boolean); };
+    var cells = function (r) { return r.split('\\|').join('\x00').split('|').map(function (c) { return c.trim().replace(/\x00/g, '|'); }).filter(Boolean); };
     var head = rows[0];
     var body = rows.slice(1);
     var ths = cells(head).map(function (c) { return '<th>' + inline(c) + '</th>'; }).join('');
@@ -253,20 +253,28 @@
   }
 
   function buildDocxTable(tableEl) {
-    var rows = [];
+    var rawRows = [];
     for (var tr = tableEl.firstElementChild; tr; tr = tr.nextElementSibling) {
       if (tr.tagName === 'THEAD' || tr.tagName === 'TBODY' || tr.tagName === 'TFOOT') {
         for (var row = tr.firstElementChild; row; row = row.nextElementSibling) {
-          if (row.tagName === 'TR') rows.push(buildRow(row));
+          if (row.tagName === 'TR') rawRows.push(row);
         }
       } else if (tr.tagName === 'TR') {
-        rows.push(buildRow(tr));
+        rawRows.push(tr);
       }
     }
-    if (!rows.length) return null;
+    if (!rawRows.length) return null;
+
+    var pageWidth = 9360;
+    var numCols = rawRows[0].children.length;
+    var colWidth = Math.floor(pageWidth / numCols);
+
+    var rows = rawRows.map(function(tr) { return buildRow(tr, colWidth); });
+
     return new docx.Table({
       rows: rows,
       width: { size: 100, type: wt.PERCENTAGE },
+      columnWidths: Array(numCols).fill(colWidth),
       borders: {
         top:    { style: bs.SINGLE, size: 1, color: '999999' },
         bottom: { style: bs.SINGLE, size: 1, color: '999999' },
@@ -278,7 +286,7 @@
     });
   }
 
-  function buildRow(tr) {
+  function buildRow(tr, colWidth) {
     var cells = [];
     for (var td = tr.firstElementChild; td; td = td.nextElementSibling) {
       var isHeader = td.tagName === 'TH';
@@ -288,7 +296,6 @@
           children: extractRuns(td),
         })],
         shading: isHeader ? { type: st.CLEAR, fill: 'F8F9FA' } : undefined,
-        width: { size: 100 / tr.children.length, type: wt.PERCENTAGE },
       }));
     }
     return new docx.TableRow({ children: cells });

@@ -27,7 +27,7 @@ function inline(text) {
 function buildTable(lines) {
   const rows = lines.filter(l => !/^\|[-:| ]+\|$/.test(l.trim()));
   if (!rows.length) return '';
-  var cells = r => r.split('|').map(c => c.trim()).filter(Boolean);
+    var cells = r => r.split('\\|').join('\x00').split('|').map(c => c.trim().replace(/\x00/g, '|')).filter(Boolean);
   var head = rows[0];
   var body = rows.slice(1);
   var ths = cells(head).map(c => '<th>' + inline(c) + '</th>').join('');
@@ -242,28 +242,24 @@ function extractRuns(parent) {
 
 function buildDocxTable(tableEl) {
   var rows = [];
-  var numCols = 0;
   for (var tr = tableEl.firstElementChild; tr; tr = tr.nextElementSibling) {
     if (tr.tagName === 'THEAD' || tr.tagName === 'TBODY' || tr.tagName === 'TFOOT') {
       for (var row = tr.firstElementChild; row; row = row.nextElementSibling) {
-        if (row.tagName === 'TR') {
-          rows.push({ el: row, numCols: row.children.length });
-          numCols = Math.max(numCols, row.children.length);
-        }
+        if (row.tagName === 'TR') rows.push(row);
       }
     } else if (tr.tagName === 'TR') {
-      rows.push({ el: tr, numCols: tr.children.length });
-      numCols = Math.max(numCols, tr.children.length);
+      rows.push(tr);
     }
   }
   if (!rows.length) return null;
 
+  var numCols = rows[0].children.length;
   var pageWidth = 9360;
   var colWidth = Math.floor(pageWidth / numCols);
 
-  var tblRows = rows.map(function(r) {
+  var tblRows = rows.map(function(tr) {
     var cells = [];
-    for (var td = r.el.firstElementChild; td; td = td.nextElementSibling) {
+    for (var td = tr.firstElementChild; td; td = td.nextElementSibling) {
       var isHeader = td.tagName === 'TH';
       cells.push(new docx.TableCell({
         children: [new docx.Paragraph({
@@ -271,7 +267,6 @@ function buildDocxTable(tableEl) {
           children: extractRuns(td),
         })],
         shading: isHeader ? { type: ShadingType.CLEAR, fill: 'F8F9FA' } : undefined,
-        width: { size: colWidth, type: WidthType.DXA },
       }));
     }
     return new docx.TableRow({ children: cells });
@@ -280,6 +275,7 @@ function buildDocxTable(tableEl) {
   return new docx.Table({
     rows: tblRows,
     width: { size: 100, type: WidthType.PERCENTAGE },
+    columnWidths: Array(numCols).fill(colWidth),
     borders: {
       top:    { style: BorderStyle.SINGLE, size: 1, color: '999999' },
       bottom: { style: BorderStyle.SINGLE, size: 1, color: '999999' },

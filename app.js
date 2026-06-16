@@ -266,7 +266,7 @@
     if (!rows.length) return null;
     return new docx.Table({
       rows: rows,
-      width: { size: '100%' },
+      width: { size: 100, type: wt.PERCENTAGE },
       borders: {
         top:    { style: bs.SINGLE, size: 1, color: '999999' },
         bottom: { style: bs.SINGLE, size: 1, color: '999999' },

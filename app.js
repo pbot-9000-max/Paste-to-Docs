@@ -564,8 +564,9 @@
 
   function updatePreview() {
     var text = input.value.trim();
-    if (!text) { preview.innerHTML = ''; return; }
+    if (!text) { preview.innerHTML = ''; preview.className = 'preview-panel'; return; }
     S = isDarkMode ? S_dark : S_light;
+    preview.className = 'preview-panel' + (styled ? '' : ' doc-preview');
     var html = markdownToHtml(text, styled);
     preview.innerHTML = html;
   }

@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Open GitHub on star link click
   document.getElementById('ghLink').addEventListener('click', (e) => {
     e.preventDefault();
-    chrome.tabs.create({ url: 'https://github.com/yourusername/paste-to-docs' });
+    chrome.tabs.create({ url: 'https://github.com/pbot-9000-max/Paste-to-Docs' });
   });
 
   function setStatus(on) {

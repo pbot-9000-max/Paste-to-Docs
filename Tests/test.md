@@ -1,10 +1,10 @@
 # paste-to-docs
  
-> Paste from Claude, ChatGPT, or Gemini into Google Docs — perfectly formatted, zero clicks.
+> Paste from Claude, ChatGPT, or Gemini — download a clean .docx file, perfectly formatted.
  
-**paste-to-docs** is a Chrome extension that intercepts your paste event, detects AI-generated content, strips broken HTML, and rebuilds clean semantic structure that Google Docs actually understands.
+**paste-to-docs** converts AI-formatted responses into a clean `.docx` file you can open in any document editor. Use the web app at [paste-to-docs](https://pbot-9000-max.github.io/Paste-to-Docs) or the companion Chrome extension.
  
-No reformatting. No extra paste. No copy-to-markdown-converter. Just Ctrl+V.
+No reformatting. No manual cleanup. Just paste and download.
  
 ---
  
@@ -36,27 +36,24 @@ This is not a niche problem. An estimated 3 billion Google Docs users overlap wi
 ---
  
 ## How It Works
- 
+
 ```
 User copies from Claude/ChatGPT/Gemini
         │
         ▼
-   Chrome intercepts paste event (capture phase)
+   Opens paste-to-docs web app
         │
         ▼
-   detectSource()  ──── checks HTML signatures for Claude, ChatGPT, Gemini
-        │                then falls back to markdown pattern detection
-        ▼
-   htmlToClean()   ──── walks DOM tree, strips AI-specific classes/wrappers,
-        │                rebuilds clean semantic HTML
-        ▼
-   [fallback]      ──── markdownToHtml() for plain-text clipboard content
+   Pastes into the editor
         │
         ▼
-   Clean HTML written to clipboard → native paste triggered
+   markdownToHtml() ──── parses markdown into clean HTML
         │
         ▼
-   Google Docs receives properly structured content ✓
+   buildDocx()     ──── maps HTML elements to docx primitives
+        │
+        ▼
+   Downloads a .docx file ✓
 ```
  
 ### What gets converted

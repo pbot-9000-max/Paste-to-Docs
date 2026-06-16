@@ -1,40 +1,45 @@
-# paste-to-docs
+# Paste → Docs
 
-> Paste from Claude, ChatGPT, or Gemini — download a clean .docx file.
+> Paste from Claude, ChatGPT, or Gemini — download a clean `.docx` file in one click.
 
-**paste-to-docs** converts AI-formatted responses (headings, bold, lists, tables, code blocks) into a properly structured `.docx` file you can open in Google Docs, Word, or any document editor.
+**paste-to-docs** converts AI-formatted responses (headings, bold, lists, tables, code blocks, links) into a properly structured Word document. No reformatting. No manual cleanup. All in your browser.
 
-No reformatting. No manual cleanup. Just paste and download.
+**[→ Open the web app](https://pbot-9000-max.github.io/Paste-to-Docs)**
+
+---
+
+## Features
+
+- **One-click conversion** — paste AI output, download a `.docx`
+- **100% private** — everything runs in your browser, nothing leaves your machine
+- **No sign-up, no ads, no limits**
+- **Supports all major AI sources** — Claude, ChatGPT, Gemini, and any markdown content
+- **Full markdown support** — headings, tables, lists, code blocks, blockquotes, links, inline formatting
+
+### What gets converted
+
+| Element | Markdown | Word Output |
+|---------|----------|-------------|
+| Headings | `## Heading` | Native Word heading style |
+| Bold | `**bold**` | Bold |
+| Italic | `*italic*` | Italic |
+| Inline code | `` `code` `` | Monospace + shaded background |
+| Code blocks | Fenced with ` ``` ` | Styled block with monospace + shading |
+| Tables | `\| A \| B \|` | Real editable Word table with borders |
+| Links | `[text](url)` | Clickable hyperlink |
+| Lists | `- item` | Properly indented bulleted/numbered lists |
+| Blockquotes | `> quote` | Indented blockquote |
+| Horizontal rules | `---` | Thematic break |
 
 ---
 
 ## How it works
 
-1. Copy a response from Claude, ChatGPT, or Gemini
-2. Paste into the textarea at **[paste-to-docs](https://pbot-9000-max.github.io/Paste-to-Docs)**
-3. Click **Download .docx**
-4. Import into Google Docs (File → Open → Upload)
+```
+1. Copy from AI ──→ 2. Paste here ──→ 3. Download .docx
+```
 
-All conversion happens in your browser — nothing is sent to a server.
-
-### What gets converted
-
-| Element | Before | After |
-|---------|--------|-------|
-| `## Heading` | Literal `##` text | Heading 2 |
-| `**bold**` | Literal asterisks | Bold |
-| `` `code` `` | Backtick-wrapped text | Monospace, shaded |
-| Code block | Fenced with `` ``` `` | Styled code block |
-| `\| Table \|` | Pipe characters | Rendered table |
-| `[Link](url)` | Literal markdown | Clickable hyperlink |
-
----
-
-## Usage
-
-Open **[paste-to-docs](https://pbot-9000-max.github.io/Paste-to-Docs)** in any browser, paste your AI response, and download.
-
-For the fastest workflow, use the companion Chrome extension (see `extension/`).
+Open **[paste-to-docs](https://pbot-9000-max.github.io/Paste-to-Docs)**, paste your AI response, and click download. Open the `.docx` in Word, Google Docs, or Pages — everything is already formatted.
 
 ---
 
@@ -43,18 +48,40 @@ For the fastest workflow, use the companion Chrome extension (see `extension/`).
 ```
 ├── index.html            Web app (paste → download .docx)
 ├── app.js                Markdown → HTML → docx conversion
-├── style.css             Web app styling
+├── style.css             Design system and layout
 ├── extension/            Chrome extension (paste interception in Google Docs)
 │   ├── manifest.json
 │   ├── content.js
 │   ├── popup.html / popup.js
 │   └── icons/
-├── package.json          Dev tooling (eslint, sharp for extension icons)
+├── Tests/
+│   ├── test.md           Test fixture for visual regression
+│   └── test.js           Node.js test harness (mirrors app.js)
+├── Outputs/
+│   ├── test.docx         Generated output for inspection
+│   └── test.html         Intermediate HTML for debugging
+├── package.json          Dev tooling
 ├── AGENTS.md             Dev instructions for AI coding assistants
-├── CONTRIBUTING.md
-├── LICENSE
-└── .gitignore
+└── CONTRIBUTING.md
 ```
+
+---
+
+## Quick start (development)
+
+```bash
+git clone https://github.com/pbot-9000-max/Paste-to-Docs.git
+cd Paste-to-Docs
+npm start        # serves at http://localhost:3000
+```
+
+No build step — open `index.html` directly or use the local server.
+
+---
+
+## Chrome extension
+
+A companion Chrome extension lives in `extension/` for intercepting pastes directly into Google Docs. The extension shares the same `markdownToHtml()` engine as the web app. See `extension/` for details.
 
 ---
 

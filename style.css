@@ -645,12 +645,6 @@ textarea::placeholder {
   color: var(--gray-600);
 }
 
-.privacy-badge {
-  font-size: 12px;
-  color: var(--violet-500);
-  font-weight: 500;
-}
-
 /* ── Download button ─────────────────────────────────── */
 
 #downloadBtn {
@@ -1004,6 +998,55 @@ footer {
   color: var(--gray-400);
 }
 
+/* ── Privacy floating badge ─────────────────────────── */
+
+.privacy-floating {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--violet-600);
+  background: var(--surface);
+  padding: 10px 16px;
+  border-radius: 100px;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  transition: all 0.25s;
+  backdrop-filter: blur(8px);
+}
+
+.privacy-floating:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+  border-color: var(--violet-200);
+}
+
+.privacy-floating svg {
+  flex-shrink: 0;
+  color: var(--violet-500);
+}
+
+[data-theme="dark"] .privacy-floating {
+  background: rgba(28, 25, 23, 0.9);
+  border-color: #292524;
+  backdrop-filter: blur(8px);
+}
+
+[data-theme="dark"] .privacy-floating:hover {
+  border-color: #3b2a5e;
+}
+
+@media (max-width: 480px) {
+  .privacy-floating {
+    display: none;
+  }
+}
+
 /* ── Responsive ──────────────────────────────────────── */
 
 @media (max-width: 768px) {
@@ -1062,9 +1105,7 @@ footer {
     grid-template-columns: 1fr 1fr;
   }
 
-  .privacy-badge {
-    display: none;
-  }
+
 }
 
 @media (max-width: 480px) {

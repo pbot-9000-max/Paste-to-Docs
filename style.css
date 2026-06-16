@@ -932,26 +932,31 @@ footer {
 /* ── Dark mode ────────────────────────────────────────── */
 
 [data-theme="dark"] {
-  --gray-50: #1c1917;
-  --gray-100: #292524;
-  --gray-200: #44403c;
-  --gray-300: #57534e;
+  --gray-50: #0c0a09;
+  --gray-100: #1c1917;
+  --gray-200: #292524;
+  --gray-300: #44403c;
   --gray-400: #78716c;
   --gray-500: #a8a29e;
   --gray-600: #d6d3d1;
   --gray-700: #e7e5e4;
   --gray-800: #f5f5f4;
   --gray-900: #fafaf9;
-  --surface: #292524;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4), 0 2px 4px -2px rgba(0,0,0,0.3);
-  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.4), 0 4px 6px -4px rgba(0,0,0,0.3);
-  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.4), 0 8px 10px -6px rgba(0,0,0,0.3);
-  --violet-100: #2e1065;
+  --surface: #1c1917;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.5), 0 2px 4px -2px rgba(0,0,0,0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5), 0 4px 6px -4px rgba(0,0,0,0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.5), 0 8px 10px -6px rgba(0,0,0,0.4);
+  --violet-100: #1e064a;
 }
 
 [data-theme="dark"] .hero-badge {
   color: var(--violet-300);
+  background: #1e064a;
+}
+
+[data-theme="dark"] body::before {
+  opacity: 0.15;
 }
 
 [data-theme="dark"] .upload-btn {
@@ -974,6 +979,47 @@ footer {
 
 [data-theme="dark"] .drop-overlay p {
   color: var(--violet-400);
+}
+
+[data-theme="dark"] .converter-card {
+  border-color: #3b2a5e;
+  box-shadow: var(--shadow-lg), 0 0 0 1px rgba(139, 92, 246, 0.08);
+}
+
+[data-theme="dark"] .converter-card:focus-within {
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25), var(--shadow-xl);
+}
+
+[data-theme="dark"] .editor-header {
+  background: #151311;
+  border-color: #292524;
+}
+
+[data-theme="dark"] .editor-footer {
+  background: #151311;
+  border-color: #292524;
+}
+
+[data-theme="dark"] .feature-card {
+  background: #151311;
+  border-color: #292524;
+}
+
+[data-theme="dark"] .feature-card:hover {
+  border-color: #3b2a5e;
+}
+
+[data-theme="dark"] footer {
+  border-color: #292524;
+}
+
+[data-theme="dark"] .Preview-sep {
+  border-color: #292524;
+}
+
+[data-theme="dark"] .preview-panel {
+  background: var(--surface);
+  border-color: #292524;
 }
 
 /* ── Loading state ───────────────────────────────────── */

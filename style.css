@@ -199,29 +199,28 @@ h1 {
 
 .hero {
   position: relative;
-  overflow: hidden;
 }
 
 .hero-glow {
-  position: absolute;
-  width: 500px;
-  height: 500px;
+  position: fixed;
+  width: 600px;
+  height: 600px;
   border-radius: 50%;
-  filter: blur(100px);
+  filter: blur(120px);
   pointer-events: none;
   z-index: -1;
-  opacity: 0.4;
+  opacity: 0.35;
 }
 
 .hero-glow--violet {
-  top: -120px;
-  left: -80px;
+  top: -200px;
+  left: -100px;
   background: var(--violet-400);
 }
 
 .hero-glow--amber {
-  bottom: -80px;
-  right: -60px;
+  bottom: -200px;
+  right: -100px;
   background: var(--amber-300);
 }
 

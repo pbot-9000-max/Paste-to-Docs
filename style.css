@@ -774,9 +774,20 @@ textarea::placeholder {
 }
 
 .feature-icon {
-  font-size: 28px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 12px;
-  line-height: 1;
+  border-radius: var(--radius-sm);
+  background: var(--violet-100);
+  color: var(--violet-600);
+}
+
+.feature-icon svg {
+  width: 22px;
+  height: 22px;
 }
 
 .feature-card h3 {

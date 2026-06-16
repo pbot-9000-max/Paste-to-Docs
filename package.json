@@ -6,10 +6,13 @@
     "icons": "node extension/icons/generate-icons.js",
     "lint": "eslint extension/content.js extension/popup.js",
     "pack": "zip -r paste-to-docs.zip extension/",
-    "start": "npx serve ."
+    "start": "npx serve .",
+    "test-convert": "node Tests/test.js"
   },
   "devDependencies": {
+    "docx": "^9.7.1",
     "eslint": "^8.0.0",
+    "jsdom": "^29.1.1",
     "sharp": "^0.33.0"
   },
   "keywords": [

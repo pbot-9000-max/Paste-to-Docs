@@ -1,0 +1,28 @@
+<h1>paste-to-docs</h1><blockquote>Paste from Claude, ChatGPT, or Gemini into Google Docs — perfectly formatted, zero clicks.</blockquote><p><strong>paste-to-docs</strong> is a Chrome extension that intercepts your paste event, detects AI-generated content, strips broken HTML, and rebuilds clean semantic structure that Google Docs actually understands.</p><p>No reformatting. No extra paste. No copy-to-markdown-converter. Just Ctrl+V.</p><hr><h2>The Problem</h2><p>Every knowledge worker using an AI assistant hits this wall dozens of times a day.</p><p>You ask Claude or ChatGPT for a structured analysis. It comes back beautifully formatted — headers, numbered lists, code blocks, a table. You copy it. You paste it into Google Docs.</p><p>And it looks like this:</p><pre><code>## Key Findings
+ 
+**Revenue** grew 23% YoY, driven by:
+- Expansion in APAC
+ - India +40%
+ - SEA +28%
+ 
+| Quarter | Revenue | Growth |
+|---------|---------|--------|
+| Q1      | $12M    | +18%   |</code></pre><p>Markdown syntax. Literal asterisks. Raw pipe characters. A document that now needs 20 minutes of manual cleanup before it can go to anyone.</p><p>This is not a niche problem. An estimated 3 billion Google Docs users overlap with the explosive growth of AI assistant usage. The formatting gap between AI output and document tools is one of the highest-friction points in modern knowledge work — and there is no maintained open-source solution for it.</p><hr><h2>How It Works</h2><pre><code>User copies from Claude/ChatGPT/Gemini
+        │
+        ▼
+   Chrome intercepts paste event (capture phase)
+        │
+        ▼
+   detectSource()  ──── checks HTML signatures for Claude, ChatGPT, Gemini
+        │                then falls back to markdown pattern detection
+        ▼
+   htmlToClean()   ──── walks DOM tree, strips AI-specific classes/wrappers,
+        │                rebuilds clean semantic HTML
+        ▼
+   [fallback]      ──── markdownToHtml() for plain-text clipboard content
+        │
+        ▼
+   Clean HTML written to clipboard → native paste triggered
+        │
+        ▼
+   Google Docs receives properly structured content ✓</code></pre><h3>What gets converted</h3><table><thead><tr><th>Element</th><th>Before</th><th>After</th></tr></thead><tbody><tr><td><code>## Heading</code></td><td>Literal <code>##</code> text</td><td>Google Docs Heading 2</td></tr><tr><td><code><strong>bold</strong></code></td><td>Literal asterisks</td><td>Bold</td></tr><tr><td>`<code> </code>inline code<code> </code>`</td><td>Backtick-wrapped text</td><td>Monospace, shaded</td></tr><tr><td>Code block</td><td>Plain text with <code> </code>`<code> </code> fences</td><td>Styled <code><pre></code> block</td></tr><tr><td>`\</td><td>Table \</td><td>... \</td><td>`</td><td>Pipe characters</td><td>Rendered table</td></tr><tr><td><code><a href="url">Link</a></code></td><td>Literal markdown</td><td>Clickable hyperlink</td></tr><tr><td>Nested lists</td><td>Flattened / broken</td><td>Proper indented lists</td></tr></tbody></table><hr>

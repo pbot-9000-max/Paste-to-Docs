@@ -8,11 +8,12 @@
 ## Developer commands
 
 | Command | What it does |
-|---|---|
+|---|---|---|
 | `npm start` | Serve the web app locally via `serve` |
 | `npm run icons` | Regenerate PNG icons from `extension/icons/icon.svg` |
 | `npm run lint` | ESLint on `extension/content.js` and `extension/popup.js` |
 | `npm run pack` | Bundle extension into a release zip |
+| `npm run test-convert` | Run `Tests/test.md` through conversion → `Outputs/test.docx` + `Outputs/test.html` |
 
 ## Web app architecture
 

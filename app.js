@@ -16,7 +16,7 @@
 
     document.addEventListener('DOMContentLoaded', function () {
       var els = document.querySelectorAll(
-        '.feature-card, .testimonial-card, .step-timeline-item, .step-content h3'
+        '.feature-card, .step-timeline-item, .step-content h3'
       );
       els.forEach(function (el) { observer.observe(el); });
     });

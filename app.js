@@ -305,8 +305,12 @@
 
   var input = document.getElementById('input');
   var btn = document.getElementById('downloadBtn');
+  var btnText = btn.querySelector('.btn-text');
+  var charCount = document.getElementById('charCount');
 
   input.addEventListener('input', function () {
+    var len = input.value.length;
+    charCount.textContent = len;
     btn.disabled = !input.value.trim();
   });
 
@@ -314,7 +318,8 @@
     var text = input.value.trim();
     if (!text) return;
 
-    btn.textContent = 'Converting...';
+    btn.classList.add('loading');
+    btnText.textContent = 'Converting\u2026';
     btn.disabled = true;
 
     try {
@@ -337,7 +342,7 @@
     } catch (err) {
       alert('Conversion failed: ' + err.message);
     } finally {
-      btn.textContent = 'Download .docx';
+      btn.classList.remove('loading');
       btn.disabled = false;
     }
   });

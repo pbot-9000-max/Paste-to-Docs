@@ -44,25 +44,24 @@
    */
   const SIGNATURES = {
     claude: [
-      /font-claude/i,
+      /anthropic/i,
+      /claude/i,
+      /prose[\s-]invert/i,
       /gap-y-prose/i,
-      /prose-invert/i,
+      /font-claude/i,
       /AnthropicMarkdown/i,
-      /data-testid="[^"]*message/,
-      /claude\.ai/i,
     ],
     chatgpt: [
-      /markdown prose/i,
       /data-message-author-role/i,
+      /chatgpt/i,
+      /openai/i,
+      /markdown prose/i,
       /result-streaming/i,
-      /chatgpt\.com/i,
-      /openai\.com/i,
     ],
     gemini: [
+      /gemini/i,
       /model-response/i,
-      /gemini-response/i,
       /bard-mode/i,
-      /gemini\.google\.com/i,
     ],
   };
 
@@ -75,11 +74,19 @@
       for (const [source, patterns] of Object.entries(SIGNATURES)) {
         if (patterns.some((p) => p.test(html))) return source;
       }
-      // Generic structured HTML (has semantic markup from an unknown source)
-      if (/<(h[1-6]|pre|code|table|blockquote)/i.test(html)) return 'html';
+      // Generic structured HTML (has semantic tags from any source)
+      if (/<(h[1-6]|pre|code|table|blockquote|article|section)/i.test(html)) return 'html';
     }
-    // Markdown in plain text
-    if (text && /^#{1,6}\s|^```|\*\*[^*]+\*\*|^\s*[-*+]\s|\|.+\|/m.test(text)) {
+    // Markdown in plain text — broad check for common patterns
+    if (text && (
+      /^#{1,6}\s/m.test(text) ||           // ATX heading
+      /^```/m.test(text) ||                 // code fence
+      /\*\*[^*]+\*\*/.test(text) ||         // bold
+      /^\s*[-*+]\s/m.test(text) ||          // unordered list
+      /^\s*\d+\.\s/m.test(text) ||          // ordered list
+      /\|.+\|/.test(text) ||                // table row
+      /^>/m.test(text)                      // blockquote
+    )) {
       return 'markdown';
     }
     return null;

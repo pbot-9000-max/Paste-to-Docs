@@ -368,6 +368,8 @@
     var len = input.value.length;
     charCount.textContent = len;
     btn.disabled = !input.value.trim();
+    btnText.textContent = 'Convert';
+    btn.classList.remove('loading');
   });
 
   btn.addEventListener('click', async function () {
@@ -395,7 +397,9 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      btnText.textContent = 'Download';
     } catch (err) {
+      btnText.textContent = 'Convert';
       alert('Conversion failed: ' + err.message);
     } finally {
       btn.classList.remove('loading');

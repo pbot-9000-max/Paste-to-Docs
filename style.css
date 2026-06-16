@@ -324,6 +324,14 @@ h1 {
   border-color: var(--violet-300);
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
 textarea {
   display: block;
   width: 100%;
@@ -377,7 +385,6 @@ textarea::placeholder {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  margin-top: 20px;
   padding: 14px 36px;
   font-size: 16px;
   font-weight: 600;

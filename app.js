@@ -526,6 +526,10 @@
   var input = document.getElementById('input');
   var btn = document.getElementById('downloadBtn');
   var btnText = btn.querySelector('.btn-text');
+  var gdocsBtn = document.getElementById('gdocsBtn');
+  var gdocsBtnText = gdocsBtn.querySelector('span');
+  var toast = document.getElementById('toast');
+  var toastText = toast.querySelector('.toast-text');
   var charCount = document.getElementById('charCount');
   var editorBody = document.querySelector('.editor-body');
   var dropOverlay = document.getElementById('dropOverlay');
@@ -632,10 +636,13 @@
 
   input.addEventListener('input', function () {
     var len = input.value.length;
+    var hasText = !!input.value.trim();
     charCount.textContent = len;
-    btn.disabled = !input.value.trim();
+    btn.disabled = !hasText;
+    gdocsBtn.disabled = !hasText;
     btnText.textContent = 'Convert';
     btn.classList.remove('loading');
+    gdocsBtnText.textContent = 'Open in Google Docs';
     updatePreview();
   });
 
@@ -672,6 +679,52 @@
     } finally {
       btn.classList.remove('loading');
       btn.disabled = false;
+    }
+  });
+
+  // ── Google Docs clipboard ──────────────────────────────────────────────────
+
+  function showToast(msg) {
+    toastText.innerHTML = msg;
+    toast.classList.add('visible');
+    var timer = setTimeout(function () { toast.classList.remove('visible'); }, 5000);
+    toast.querySelector('.toast-close').onclick = function () {
+      clearTimeout(timer);
+      toast.classList.remove('visible');
+    };
+  }
+
+  gdocsBtn.addEventListener('click', async function () {
+    var text = input.value.trim();
+    if (!text) return;
+
+    gdocsBtn.disabled = true;
+    gdocsBtnText.textContent = 'Copying\u2026';
+
+    try {
+      var html = markdownToHtml(text, false); // clean semantic HTML, no inline styles
+      var clipboardHtml = '<!DOCTYPE html><html><body>' + html + '</body></html>';
+      var plainText = text;
+
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'text/html': new Blob([clipboardHtml], { type: 'text/html' }),
+          'text/plain': new Blob([plainText], { type: 'text/plain' }),
+        }),
+      ]);
+
+      window.open('https://docs.google.com/document/create', '_blank');
+      showToast('Copied! <kbd>\u2318V</kbd> in the new Google Doc tab');
+    } catch (err) {
+      // ponytail: fallback — copy plain text + manual instructions
+      try {
+        await navigator.clipboard.writeText(plainText || text);
+      } catch (_) {}
+      window.open('https://docs.google.com/document/create', '_blank');
+      showToast('Copied to clipboard. Paste (<kbd>\u2318V</kbd>) into the new Google Doc');
+    } finally {
+      gdocsBtn.disabled = false;
+      gdocsBtnText.textContent = 'Open in Google Docs';
     }
   });
 })();

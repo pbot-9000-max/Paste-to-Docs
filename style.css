@@ -719,6 +719,180 @@ textarea::placeholder {
 }
 
 
+/* ── Comparison section ──────────────────────────────── */
+
+.comparison-section {
+  padding: 40px 0;
+  text-align: center;
+}
+
+.comparison-section h2 {
+  font-size: clamp(24px, 3.5vw, 36px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--gray-900);
+  margin-bottom: 40px;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.comparison-col {
+  background: var(--surface);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+
+.comparison-col--before {
+  border-color: var(--gray-200);
+}
+
+.comparison-col--after {
+  border-color: var(--violet-300);
+  box-shadow: 0 0 0 1px var(--violet-200), var(--shadow-md);
+}
+
+.comparison-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin-bottom: 16px;
+}
+
+.comparison-col--before .comparison-heading svg {
+  color: var(--gray-400);
+}
+
+.comparison-col--after .comparison-heading svg {
+  color: var(--violet-500);
+}
+
+.comparison-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.comparison-list li {
+  font-size: 14px;
+  color: var(--gray-600);
+  padding: 6px 0;
+  line-height: 1.5;
+}
+
+.comparison-list li::before {
+  content: "—";
+  color: var(--gray-300);
+  margin-right: 8px;
+}
+
+.comparison-col--after .comparison-list li::before {
+  content: "✓";
+  color: var(--violet-500);
+  font-weight: 700;
+}
+
+.comparison-list__total {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--gray-200);
+  font-weight: 700 !important;
+  font-size: 16px !important;
+}
+
+.comparison-list__total::before {
+  display: none !important;
+}
+
+.comparison-list__total--win {
+  color: var(--violet-600) !important;
+}
+
+/* ── Testimonial section ─────────────────────────────── */
+
+.testimonial-section {
+  padding: 32px 0 48px;
+  text-align: center;
+}
+
+.testimonial-card {
+  max-width: 600px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px;
+  text-align: left;
+  position: relative;
+}
+
+.testimonial-quote {
+  position: absolute;
+  top: 20px;
+  left: 24px;
+  color: var(--violet-600);
+}
+
+.testimonial-text {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--gray-700);
+  font-style: italic;
+  margin-bottom: 20px;
+  padding-left: 0;
+}
+
+.testimonial-attribution {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.testimonial-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  color: var(--violet-500);
+  flex-shrink: 0;
+}
+
+.testimonial-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.testimonial-role {
+  font-size: 12px;
+  color: var(--gray-400);
+}
+
+/* ── Shared utilities ────────────────────────────────── */
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.step-link {
+  color: var(--violet-600);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.step-link:hover {
+  color: var(--violet-800);
+}
 
 /* ── Steps section ───────────────────────────────────── */
 
@@ -946,6 +1120,13 @@ footer {
     grid-template-columns: 1fr 1fr;
   }
 
+  .comparison-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .testimonial-card {
+    padding: 28px 20px;
+  }
 
 }
 
@@ -1041,6 +1222,37 @@ footer {
 
 [data-theme="dark"] .feature-card:hover {
   border-color: #3b2a5e;
+}
+
+[data-theme="dark"] .comparison-col {
+  background: #151311;
+  border-color: #292524;
+}
+
+[data-theme="dark"] .comparison-col--after {
+  border-color: #3b2a5e;
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.2), var(--shadow-md);
+}
+
+[data-theme="dark"] .comparison-list__total--win {
+  color: var(--violet-400) !important;
+}
+
+[data-theme="dark"] .testimonial-card {
+  background: #151311;
+  border-color: #292524;
+}
+
+[data-theme="dark"] .testimonial-text {
+  color: var(--gray-600);
+}
+
+[data-theme="dark"] .step-link {
+  color: var(--violet-400);
+}
+
+[data-theme="dark"] .step-link:hover {
+  color: var(--violet-300);
 }
 
 [data-theme="dark"] .step-connector {

@@ -6,8 +6,7 @@
     "icons": "node extension/icons/generate-icons.js",
     "lint": "eslint extension/content.js extension/popup.js",
     "pack": "zip -r paste-to-docs.zip extension/",
-    "start": "npx serve .",
-    "test-convert": "node Tests/test.js"
+    "start": "npx serve ."
   },
   "devDependencies": {
     "docx": "^9.7.1",

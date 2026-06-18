@@ -4,7 +4,7 @@
 
 - **`index.html`** / **`app.js`** / **`style.css`** — web app (primary). No build step, open `index.html` directly or `npm start` to serve locally.
 - **`extension/`** — Chrome extension (secondary, moved here from root). All extension files live here.
-- **`Tests/`** — test fixture (`test.md`) + Node.js test harness (`test.js`) for visual regression
+- **`Tests/`** — test fixture (`test.md`) for manual verification
 - **`Outputs/`** — generated `.docx` and `.html` for inspection
 
 ## Developer commands
@@ -12,7 +12,6 @@
 | Command | What it does |
 |---|---|
 | `npm start` | Serve the web app locally via `serve` |
-| `npm run test-convert` | Run `Tests/test.md` through conversion → `Outputs/test.docx` + `Outputs/test.html` |
 | `npm run icons` | Regenerate PNG icons from `extension/icons/icon.svg` |
 | `npm run lint` | ESLint on `extension/content.js` and `extension/popup.js` |
 | `npm run pack` | Bundle extension into a release zip |

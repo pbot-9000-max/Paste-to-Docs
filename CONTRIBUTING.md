@@ -26,26 +26,16 @@ The `docx` library (v9) is loaded from CDN in `index.html` — no `npm install` 
 | Command | What it does |
 |---|---|
 | `npm start` | Serve the web app locally via `serve` |
-| `npm run test-convert` | Run `Tests/test.md` through conversion → inspect `Outputs/test.docx` + `Outputs/test.html` |
 | `npm run icons` | Regenerate PNG icons from `extension/icons/icon.svg` |
 | `npm run lint` | ESLint on `extension/content.js` and `extension/popup.js` |
 | `npm run pack` | Bundle extension into a release zip |
 
-### Testing changes
-
-```bash
-npm run test-convert
-# Check the HTML output: open Outputs/test.html
-# Check the docx output: unzip Outputs/test.docx and inspect word/document.xml
-```
-
-The test fixture (`Tests/test.md`) covers headings, lists, code blocks, tables with escaped pipes, blockquotes, and horizontal rules. Add new test cases there when adding new formatting support.
-
 ### Verifying docx XML
 
 ```bash
-npm run test-convert
-cd /tmp && unzip -o <repo>/Outputs/test.docx word/document.xml
+npm start
+# Open http://localhost:3000, paste a test markdown, download the .docx
+unzip -o ~/Downloads/converted.docx word/document.xml
 grep -oE 'w:tbl[^>]*>|w:tblW[^/]*/|w:tblGrid[^>]*>|w:gridCol[^/]*/|w:tr[^>]*>|w:tc[^>]*>' word/document.xml
 ```
 
@@ -82,7 +72,7 @@ The Chrome extension lives in `extension/`. It shares the same `markdownToHtml()
 
 ## Pull requests
 
-- [ ] Tested locally — `npm run test-convert` passes and Outputs look correct
+- [ ] Tested locally — paste a test markdown in the web app and verify the output
 - [ ] Checked the web app — open `index.html` (or `npm start`) and verify conversion
 - [ ] No new external dependencies (CDN-loaded libraries go in `index.html`)
 - [ ] If changing the extension, verify in Chrome Developer mode

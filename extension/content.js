@@ -144,7 +144,7 @@
       case 'a': {
         const href = node.getAttribute('href') ?? '';
         if (!href || href.startsWith('#')) return ch();
-        return `<a href="${escAttr(href)}">${ch()}</a>`;
+        return `<a href="${String(href).replace(/"/g,'&quot;').replace(/'/g,'&#39;')}">${ch()}</a>`;
       }
 
       // Inline code vs. code block
@@ -319,6 +319,15 @@
 
   // ── Paste Interceptor ──────────────────────────────────────────────────────
 
+  async function writeClipboard(html, text) {
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'text/html':  new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([text], { type: 'text/plain' }),
+      }),
+    ]);
+  }
+
   document.addEventListener('paste', onPaste, true /* capture phase */);
 
   async function onPaste(e) {
@@ -345,12 +354,7 @@
 
       // Strategy 1: write clean HTML to clipboard → trigger native paste
       try {
-        await navigator.clipboard.write([
-          new ClipboardItem({
-            'text/html':  new Blob([cleanHtml], { type: 'text/html' }),
-            'text/plain': new Blob([text],      { type: 'text/plain' }),
-          }),
-        ]);
+        await writeClipboard(cleanHtml, text);
         document.execCommand('paste');
         pasted = true;
       } catch (_) { /* fall through */ }
@@ -366,12 +370,7 @@
       // Strategy 3: write to clipboard + show nudge for a second paste
       if (!pasted) {
         try {
-          await navigator.clipboard.write([
-            new ClipboardItem({
-              'text/html':  new Blob([cleanHtml], { type: 'text/html' }),
-              'text/plain': new Blob([text],      { type: 'text/plain' }),
-            }),
-          ]);
+          await writeClipboard(cleanHtml, text);
         } catch (_) { /* nothing more we can do */ }
         showNudge('Formatted ✓ — press Ctrl+V to paste');
       }
@@ -422,10 +421,6 @@
       .replace(/>/g, '&gt;');
   }
 
-  function escAttr(s) {
-    return String(s)
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
+
 
 })();

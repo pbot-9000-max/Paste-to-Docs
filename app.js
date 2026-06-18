@@ -1,27 +1,6 @@
 (function () {
   'use strict';
 
-  // ── Scroll animations ────────────────────────────────────────────────────
-
-  (function initScrollAnimations() {
-    if (!window.IntersectionObserver) return;
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-    document.addEventListener('DOMContentLoaded', function () {
-      var els = document.querySelectorAll(
-        '.feature-card, .step-timeline-item, .step-content h3'
-      );
-      els.forEach(function (el) { observer.observe(el); });
-    });
-  })();
-
   // ── Markdown → HTML ──────────────────────────────────────────────────────
 
   function esc(s) {
@@ -157,9 +136,6 @@
       if (hM) {
         var lvl = hM[1].length;
         var hStyle = styled ? (hStyles[lvl] || '') : '';
-        if (isFirst && lvl === 1) {
-          // first H1 gets no top margin — already set in hStyles[1]
-        }
         blocks.push('<h' + lvl + hStyle + '>' + inline(hM[2], styled) + '</h' + lvl + '>');
         i++; isFirst = false; continue;
       }

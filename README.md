@@ -55,8 +55,7 @@ Open **[paste-to-docs](https://paste-to-docs.vercel.app)**, paste your AI respon
 │   ├── popup.html / popup.js
 │   └── icons/
 ├── Tests/
-│   ├── test.md           Test fixture for visual regression
-│   └── test.js           Node.js test harness (mirrors app.js)
+│   └── test.md           Test fixture sample
 ├── Outputs/
 │   ├── test.docx         Generated output for inspection
 │   └── test.html         Intermediate HTML for debugging

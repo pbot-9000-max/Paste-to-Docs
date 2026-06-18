@@ -30,10 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   toggle.checked = enabled;
   setStatus(enabled);
 
-  // Animate counter in
-  animateCount(countVal, count);
-
-  // Show last source
+  countVal.textContent = count.toLocaleString();
   lastSrcVal.textContent = lastSource ? (SOURCE_LABELS[lastSource] ?? lastSource) : '—';
 
   // Handle toggle
@@ -59,18 +56,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     statusDot.style.background = on ? 'var(--green)' : 'var(--red)';
     statusText.style.color     = on ? 'var(--green)' : 'var(--red)';
     statusText.textContent     = on ? 'Active' : 'Paused';
-  }
-
-  function animateCount(el, target) {
-    if (target === 0) return;
-    const duration = 600;
-    const start    = performance.now();
-    const tick = (now) => {
-      const progress = Math.min((now - start) / duration, 1);
-      const eased    = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-      el.textContent = Math.round(eased * target).toLocaleString();
-      if (progress < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
   }
 });

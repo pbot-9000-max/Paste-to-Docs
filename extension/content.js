@@ -235,7 +235,7 @@
           qLines.push(lines[i++].slice(2));
         }
         blocks.push(
-          `<blockquote style="${S.blockquote}">${inline(qLines.join('<br>'))}</blockquote>`
+          `<blockquote style="${S.blockquote}">${inline(qLines.join('\n')).replace(/\n/g, '<br>')}</blockquote>`
         );
         continue;
       }
@@ -282,7 +282,12 @@
 
   /** Process inline markdown within a line of text. */
   function inline(text) {
-    return text
+    const escaped = [];
+    return esc(text)
+      .replace(/\\([\\`*_{}[\]()#+.!-])/g, (_, char) => {
+        escaped.push(char);
+        return `\x00${escaped.length - 1}\x00`;
+      })
       .replace(/\*\*\*(.+?)\*\*\*/g,           '<strong><em>$1</em></strong>')
       .replace(/\*\*(.+?)\*\*/g,                '<strong>$1</strong>')
       .replace(/__(.+?)__/g,                    '<strong>$1</strong>')
@@ -290,7 +295,11 @@
       .replace(/_([^_]+)_/g,                    '<em>$1</em>')
       .replace(/~~(.+?)~~/g,                    '<del>$1</del>')
       .replace(/`([^`]+)`/g,                    `<code style="${S.inlineCode}">$1</code>`)
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g,      '<a href="$2">$1</a>');
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g,      (_, label, href) => {
+        if (/^[a-z][\w+.-]*:/i.test(href) && !/^(https?|mailto):/i.test(href)) return label;
+        return `<a href="${href.replace(/&quot;/g, '%22')}">${label}</a>`;
+      })
+      .replace(/\x00(\d+)\x00/g, (_, index) => escaped[index]);
   }
 
   /** Build an HTML table from markdown pipe-table lines. */
@@ -355,15 +364,13 @@
       // Strategy 1: write clean HTML to clipboard → trigger native paste
       try {
         await writeClipboard(cleanHtml, text);
-        document.execCommand('paste');
-        pasted = true;
+        pasted = document.execCommand('paste');
       } catch (_) { /* fall through */ }
 
       // Strategy 2: execCommand insertHTML (older fallback)
       if (!pasted) {
         try {
-          document.execCommand('insertHTML', false, cleanHtml);
-          pasted = true;
+          pasted = document.execCommand('insertHTML', false, cleanHtml);
         } catch (_) { /* fall through */ }
       }
 

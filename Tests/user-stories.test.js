@@ -11,7 +11,7 @@ function docxStub() {
     HeadingLevel: Object.fromEntries(Array.from({ length: 6 }, (_, i) => [`HEADING_${i + 1}`, `h${i + 1}`])),
     ShadingType: { CLEAR: 'clear' }, UnderlineType: { SINGLE: 'single' },
     WidthType: { PERCENTAGE: 'pct' }, BorderStyle: { SINGLE: 'single' },
-    TextRun: Item, Paragraph: Item, Table: Item, TableCell: Item, TableRow: Item,
+    TextRun: Item, ExternalHyperlink: Item, Paragraph: Item, Table: Item, TableCell: Item, TableRow: Item,
     Document: Item, Packer: { toBlob: async () => new Blob(['docx']) },
   };
 }
@@ -125,7 +125,7 @@ async function run() {
   });
   await check('WEB DOCX creates a real hyperlink', () => {
     const children = w.__test.buildDocx('<p><a href="https://e.test">link</a></p>', false);
-    assert.equal(children[0].children[0].href, 'https://e.test');
+    assert.equal(children[0].children[0].link, 'https://e.test');
   });
 
   const ext = extensionApp();

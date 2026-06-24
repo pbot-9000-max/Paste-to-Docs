@@ -57,8 +57,12 @@
     var codeStyle = styled ? ' style="' + S.inlineCode + '"' : '';
     var aStyle = styled ? ' style="' + S.a + '"' : '';
     var ss = styled ? ' style="color:inherit"' : '';
-    return text
-      .replace(/\\([\\`*_{}[\]()#+.!-])/g, '$1')
+    var escaped = [];
+    return esc(text)
+      .replace(/\\([\\`*_{}[\]()#+.!-])/g, function (_, char) {
+        escaped.push(char);
+        return '\x00' + (escaped.length - 1) + '\x00';
+      })
       .replace(/\*\*\*(.+?)\*\*\*/g, '<strong' + ss + '><em' + ss + '>$1</em></strong>')
       .replace(/\*\*(.+?)\*\*/g, '<strong' + ss + '>$1</strong>')
       .replace(/__(.+?)__/g, '<strong' + ss + '>$1</strong>')
@@ -66,7 +70,11 @@
       .replace(/_([^_]+)_/g, '<em' + ss + '>$1</em>')
       .replace(/~~(.+?)~~/g, '<del>$1</del>')
       .replace(/`([^`]+)`/g, '<code' + codeStyle + '>$1</code>')
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2"' + aStyle + '>$1</a>');
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (_, label, href) {
+        if (/^[a-z][\w+.-]*:/i.test(href) && !/^(https?|mailto):/i.test(href)) return label;
+        return '<a href="' + href.replace(/&quot;/g, '%22') + '"' + aStyle + '>' + label + '</a>';
+      })
+      .replace(/\x00(\d+)\x00/g, function (_, index) { return escaped[index]; });
   }
 
   function buildTable(lines, styled) {
@@ -144,7 +152,7 @@
       if (line.startsWith('> ')) {
         var qLines = [];
         while (i < lines.length && lines[i].startsWith('> ')) qLines.push(lines[i++].slice(2));
-        blocks.push('<blockquote' + bqStyle + '>' + inline(qLines.join('<br>'), styled) + '</blockquote>');
+        blocks.push('<blockquote' + bqStyle + '>' + inline(qLines.join('\n'), styled).replace(/\n/g, '<br>') + '</blockquote>');
         isFirst = false;
         continue;
       }
@@ -216,13 +224,12 @@
           if (styled) {
             var sizes = { 1: 56, 2: 44, 3: 34, 4: 30, 5: 24, 6: 20 };
             var colors = { 1: '111827', 2: '1D4ED8', 3: '374151', 4: '6B7280', 5: '374151', 6: '374151' };
-            headingChildren = [new docx.TextRun({
-              text: el.textContent,
+            headingChildren = extractRuns(el, {
               font: 'Calibri',
               size: sizes[level],
               color: colors[level],
               bold: level <= 4,
-            })];
+            });
           } else {
             headingChildren = extractRuns(el);
           }
@@ -244,12 +251,11 @@
           if (styled) {
             children.push(new docx.Paragraph({
               spacing: { after: 200 },
-              children: [new docx.TextRun({
-                text: el.textContent,
+              children: extractRuns(el, {
                 font: 'Calibri',
                 size: 22,
                 color: '374151',
-              })],
+              }),
             }));
           } else {
             children.push(new docx.Paragraph({
@@ -267,8 +273,7 @@
                 indent: { left: 720, hanging: 360 },
                 children: [
                   new docx.TextRun({ text: '\u2022 ', font: 'Symbol', size: 22, color: '374151' }),
-                  new docx.TextRun({ text: lis[j].textContent, font: 'Calibri', size: 22, color: '374151' }),
-                ],
+                ].concat(extractRuns(lis[j], { font: 'Calibri', size: 22, color: '374151' })),
               }));
             } else {
               children.push(new docx.Paragraph({
@@ -289,8 +294,7 @@
                 indent: { left: 720, hanging: 360 },
                 children: [
                   new docx.TextRun({ text: (k + 1) + '. ', font: 'Calibri', size: 22, color: '374151' }),
-                  new docx.TextRun({ text: lis[k].textContent, font: 'Calibri', size: 22, color: '374151' }),
-                ],
+                ].concat(extractRuns(lis[k], { font: 'Calibri', size: 22, color: '374151' })),
               }));
             } else {
               children.push(new docx.Paragraph({
@@ -337,12 +341,11 @@
               borders: {
                 left: { style: bs.SINGLE, size: 12, color: '6366F1' },
               },
-              children: [new docx.TextRun({
-                text: el.textContent,
+              children: extractRuns(el, {
                 font: 'Calibri',
                 size: 22,
                 color: '374151',
-              })],
+              }),
             }));
           } else {
             children.push(new docx.Paragraph({
@@ -397,54 +400,39 @@
 
   // ── docx helpers ─────────────────────────────────────────────────────────
 
-  function extractRuns(parent) {
+  function extractRuns(parent, base) {
     var runs = [];
-    for (var node = parent.firstChild; node; node = node.nextSibling) {
-      if (node.nodeType === 3) {
-        runs.push(new docx.TextRun({ text: node.textContent }));
-      } else if (node.nodeType === 1) {
-        var tag = node.tagName.toLowerCase();
-        switch (tag) {
-          case 'strong': case 'b':
-            runs.push(new docx.TextRun({ text: node.textContent, bold: true }));
-            break;
-          case 'em': case 'i':
-            runs.push(new docx.TextRun({ text: node.textContent, italics: true }));
-            break;
-          case 'code':
-            runs.push(new docx.TextRun({
-              text: node.textContent,
-              font: 'Consolas',
-              shading: { type: st.CLEAR, fill: 'F1F3F4' },
-            }));
-            break;
-          case 'a':
-            runs.push(new docx.TextRun({
-              text: node.textContent,
-              color: '1A73E8',
-              underline: { type: ut.SINGLE },
-            }));
-            break;
-          case 'del': case 's':
-            runs.push(new docx.TextRun({ text: node.textContent, strike: true }));
-            break;
-          case 'sup':
-            runs.push(new docx.TextRun({ text: node.textContent, superScript: true }));
-            break;
-          case 'sub':
-            runs.push(new docx.TextRun({ text: node.textContent, subScript: true }));
-            break;
-          case 'mark':
-            runs.push(new docx.TextRun({
-              text: node.textContent,
-              shading: { type: st.CLEAR, fill: 'FEEFC0' },
-            }));
-            break;
-          default:
-            runs.push(new docx.TextRun({ text: node.textContent }));
+    base = base || {};
+
+    function walk(parentNode, inherited, target) {
+      for (var node = parentNode.firstChild; node; node = node.nextSibling) {
+        if (node.nodeType === 3) {
+          target.push(new docx.TextRun(Object.assign({}, base, inherited, { text: node.textContent })));
+          continue;
         }
+        if (node.nodeType !== 1) continue;
+
+        var tag = node.tagName.toLowerCase();
+        if (tag === 'strong' || tag === 'b') walk(node, Object.assign({}, inherited, { bold: true }), target);
+        else if (tag === 'em' || tag === 'i') walk(node, Object.assign({}, inherited, { italics: true }), target);
+        else if (tag === 'del' || tag === 's') walk(node, Object.assign({}, inherited, { strike: true }), target);
+        else if (tag === 'sup') walk(node, Object.assign({}, inherited, { superScript: true }), target);
+        else if (tag === 'sub') walk(node, Object.assign({}, inherited, { subScript: true }), target);
+        else if (tag === 'mark') walk(node, Object.assign({}, inherited, { shading: { type: st.CLEAR, fill: 'FEEFC0' } }), target);
+        else if (tag === 'code') target.push(new docx.TextRun(Object.assign({}, base, inherited, {
+          text: node.textContent,
+          font: 'Consolas',
+          shading: { type: st.CLEAR, fill: 'F1F3F4' },
+        })));
+        else if (tag === 'a') {
+          var linkRuns = [];
+          walk(node, Object.assign({}, inherited, { color: '1A73E8', underline: { type: ut.SINGLE } }), linkRuns);
+          target.push(new docx.ExternalHyperlink({ link: node.getAttribute('href'), children: linkRuns }));
+        } else walk(node, inherited, target);
       }
     }
+
+    walk(parent, {}, runs);
     return runs;
   }
 
@@ -494,13 +482,12 @@
         cells.push(new docx.TableCell({
           children: [new docx.Paragraph({
             spacing: { before: 40, after: 40 },
-            children: [new docx.TextRun({
-              text: td.textContent,
+            children: extractRuns(td, {
               font: 'Calibri',
               size: 22,
               color: cellIsHeader ? '0F172A' : '374151',
               bold: !!cellIsHeader,
-            })],
+            }),
           })],
           shading: cellIsHeader
             ? { type: st.CLEAR, fill: 'F1F5F9' }

@@ -168,6 +168,10 @@ async function run() {
   await check('WEB-027 GitHub link is isolated', () => {
     const link = w.document.querySelector('.github-link'); assert.equal(link.target, '_blank'); assert.match(link.rel, /noopener/);
   });
+  await check('WEB-029 Chrome extension CTA opens installation instructions', () => {
+    const link = [...w.document.querySelectorAll('a')].find(node => node.textContent === 'Chrome extension');
+    assert.equal(link.href, 'https://github.com/pbot-9000-max/Paste-to-Docs#chrome-extension');
+  });
   await check('WEB copy does not promise unsupported nested lists', () => {
     const card = [...w.document.querySelectorAll('.feature-card')].find(node => node.textContent.includes('No flat text'));
     assert.doesNotMatch(card.textContent, /Nested/);

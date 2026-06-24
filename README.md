@@ -80,7 +80,13 @@ No build step — open `index.html` directly or use the local server.
 
 ## Chrome extension
 
-A companion Chrome extension lives in `extension/` for intercepting pastes directly into Google Docs. The extension shares the same `markdownToHtml()` engine as the web app. See `extension/` for details.
+A companion Chrome extension lives in `extension/` for intercepting pastes directly into Google Docs. To install it:
+
+1. Open `chrome://extensions` in Chrome.
+2. Enable **Developer mode**.
+3. Choose **Load unpacked** and select this repository's `extension/` directory.
+
+The extension shares the same `markdownToHtml()` engine as the web app.
 
 ---
 

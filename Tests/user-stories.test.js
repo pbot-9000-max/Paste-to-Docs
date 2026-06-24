@@ -25,8 +25,9 @@ function webApp() {
   const dom = new JSDOM(html, { url: 'http://localhost/', runScripts: 'outside-only' });
   const { window } = dom;
   window.matchMedia = () => ({ matches: false });
-  window.alert = () => {};
+  window.alert = message => { window.__alert = message; };
   window.docx = docxStub();
+  window.docx.Packer.toBlob = async document => { window.__document = document; return new Blob(['docx']); };
   window.URL.createObjectURL = () => 'blob:test';
   window.URL.revokeObjectURL = () => {};
   window.HTMLAnchorElement.prototype.click = function () { window.__download = this.download; };
@@ -39,15 +40,16 @@ function webApp() {
 function extensionApp() {
   const dom = new JSDOM('<!doctype html><body></body>', { url: 'https://docs.google.com/document/d/test', runScripts: 'outside-only' });
   const { window } = dom;
-  let pasteHandler;
+  let pasteHandler, messageHandler;
+  const writes = [];
   const originalAdd = window.document.addEventListener.bind(window.document);
   window.document.addEventListener = (type, handler, options) => {
     if (type === 'paste') pasteHandler = handler;
     return originalAdd(type, handler, options);
   };
   window.chrome = {
-    storage: { sync: { get: (_defaults, callback) => callback({ enabled: true, count: 0 }), set: () => {} } },
-    runtime: { onMessage: { addListener: () => {} } },
+    storage: { sync: { get: (_defaults, callback) => callback({ enabled: true, count: 0 }), set: value => writes.push(value) } },
+    runtime: { onMessage: { addListener: handler => { messageHandler = handler; } } },
   };
   window.navigator.clipboard = { write: async () => {} };
   window.ClipboardItem = class { constructor(value) { this.value = value; } };
@@ -55,7 +57,29 @@ function extensionApp() {
   const source = expose(fs.readFileSync(path.join(root, 'extension/content.js'), 'utf8'),
     ['detectSource', 'htmlToClean', 'walkNode', 'markdownToHtml', 'inline', 'buildTable', 'onPaste']);
   window.eval(source);
-  return { dom, pasteHandler };
+  return { dom, pasteHandler, messageHandler, writes };
+}
+
+async function popupApp() {
+  const html = fs.readFileSync(path.join(root, 'extension/popup.html'), 'utf8');
+  const dom = new JSDOM(html, { url: 'chrome-extension://test/popup.html', runScripts: 'outside-only' });
+  const { window } = dom;
+  const sets = [], messages = [], created = [];
+  window.chrome = {
+    runtime: { getManifest: () => ({ version: '1.2.3' }) },
+    storage: { sync: {
+      get: async () => ({ enabled: false, count: 1234, lastSource: 'chatgpt' }),
+      set: async value => { sets.push(value); },
+    } },
+    tabs: {
+      query: async () => [{ id: 7 }, { id: 8 }],
+      sendMessage: async (id, message) => { messages.push([id, message]); },
+      create: value => { created.push(value); },
+    },
+  };
+  window.eval(fs.readFileSync(path.join(root, 'extension/popup.js'), 'utf8'));
+  await new Promise(resolve => setTimeout(resolve));
+  return { dom, sets, messages, created };
 }
 
 async function run() {
@@ -112,9 +136,41 @@ async function run() {
     assert.equal(w.document.documentElement.getAttribute('data-theme'), 'dark');
     assert.equal(w.localStorage.getItem('theme'), 'dark');
   });
+  await check('WEB-008 file picker upload', async () => {
+    const picker = w.document.getElementById('fileInput');
+    Object.defineProperty(picker, 'files', { configurable: true, value: [new w.File(['# Uploaded'], 'test.md', { type: 'text/markdown' })] });
+    picker.dispatchEvent(new w.Event('change'));
+    await new Promise(resolve => setTimeout(resolve, 50));
+    assert.equal(input.value, '# Uploaded'); assert.equal(button.disabled, false);
+  });
+  await check('WEB-009/010 drag feedback and unsupported file rejection', async () => {
+    const editor = w.document.querySelector('.editor-body');
+    editor.dispatchEvent(new w.Event('dragenter', { bubbles: true })); assert.equal(editor.classList.contains('dragging'), true);
+    const drop = new w.Event('drop', { bubbles: true });
+    Object.defineProperty(drop, 'dataTransfer', { value: { files: [new w.File(['bad'], 'image.png', { type: 'image/png' })] } });
+    editor.dispatchEvent(drop); await new Promise(resolve => setTimeout(resolve, 50));
+    assert.equal(editor.classList.contains('dragging'), false); assert.notEqual(input.value, 'bad');
+  });
   await check('WEB-023/024 successful conversion', async () => {
     button.click(); await new Promise(resolve => setTimeout(resolve));
     assert.equal(w.__download, 'converted.docx'); assert.equal(button.disabled, false);
+  });
+  await check('WEB-025 conversion failure recovery', async () => {
+    w.docx.Packer.toBlob = async () => { throw new Error('boom'); };
+    button.click(); await new Promise(resolve => setTimeout(resolve));
+    assert.equal(w.__alert, 'Conversion failed: boom'); assert.equal(button.textContent.includes('Convert'), true); assert.equal(button.disabled, false);
+  });
+  await check('WEB-026 dark preview exports light styling', async () => {
+    w.docx.Packer.toBlob = async document => { w.__document = document; return new Blob(['docx']); };
+    input.value = '## Heading'; input.dispatchEvent(new w.Event('input')); button.click(); await new Promise(resolve => setTimeout(resolve));
+    const heading = w.__document.sections[0].children[0].children[0]; assert.equal(heading.color, '1D4ED8');
+  });
+  await check('WEB-027 GitHub link is isolated', () => {
+    const link = w.document.querySelector('.github-link'); assert.equal(link.target, '_blank'); assert.match(link.rel, /noopener/);
+  });
+  await check('WEB copy does not promise unsupported nested lists', () => {
+    const card = [...w.document.querySelectorAll('.feature-card')].find(node => node.textContent.includes('Lists with real depth'));
+    assert.doesNotMatch(card.textContent, /Nested/);
   });
   await check('WEB security boundary escapes raw HTML', () => {
     assert.match(w.__test.markdownToHtml('<img src=x onerror=alert(1)>', false), /&lt;img/);
@@ -154,7 +210,38 @@ async function run() {
     ext.dom.window.document.execCommand = () => false;
     let calls = 0; ext.dom.window.navigator.clipboard.write = async () => { calls++; };
     await ext.pasteHandler({ clipboardData: { getData: type => type === 'text/plain' ? '# H' : '' }, preventDefault() {}, stopImmediatePropagation() {} });
-    assert.ok(calls >= 2);
+    assert.ok(calls >= 2); assert.match(ext.dom.window.document.body.textContent, /press Ctrl\+V/);
+  });
+  await new Promise(resolve => setTimeout(resolve, 170));
+  await check('EXT-011 usage stats', async () => {
+    ext.dom.window.document.execCommand = () => true;
+    await ext.pasteHandler({ clipboardData: { getData: type => type === 'text/plain' ? '# Stats' : '' }, preventDefault() {}, stopImmediatePropagation() {} });
+    assert.equal(JSON.stringify(ext.writes.at(-1)), JSON.stringify({ count: 1, lastSource: 'markdown' }));
+  });
+  await check('EXT-010/014 debounce and runtime disable', async () => {
+    const isolated = extensionApp();
+    const event = { clipboardData: { getData: type => type === 'text/plain' ? '# Once' : '' }, preventDefault() {}, stopImmediatePropagation() {} };
+    await Promise.all([isolated.pasteHandler(event), isolated.pasteHandler(event)]);
+    assert.equal(isolated.writes.length, 1);
+    isolated.messageHandler({ type: 'SET_ENABLED', enabled: false });
+    await new Promise(resolve => setTimeout(resolve, 170));
+    await isolated.pasteHandler(event); assert.equal(isolated.writes.length, 1);
+  });
+
+  const popup = await popupApp();
+  const p = popup.dom.window.document;
+  await check('EXT-012 popup state', () => {
+    assert.equal(p.getElementById('toggle').checked, false); assert.equal(p.getElementById('statusText').textContent, 'Paused');
+    assert.equal(p.getElementById('countVal').textContent, '1,234'); assert.equal(p.getElementById('lastSourceVal').textContent, 'ChatGPT');
+    assert.equal(p.getElementById('version').textContent, 'v1.2.3');
+  });
+  await check('EXT-013 popup enable broadcast', async () => {
+    const toggle = p.getElementById('toggle'); toggle.checked = true; toggle.dispatchEvent(new popup.dom.window.Event('change'));
+    await new Promise(resolve => setTimeout(resolve));
+    assert.equal(JSON.stringify(popup.sets), JSON.stringify([{ enabled: true }])); assert.equal(popup.messages.length, 2); assert.equal(p.getElementById('statusText').textContent, 'Active');
+  });
+  await check('EXT-015 popup GitHub navigation', () => {
+    p.getElementById('ghLink').click(); assert.equal(JSON.stringify(popup.created), JSON.stringify([{ url: 'https://github.com/pbot-9000-max/Paste-to-Docs' }]));
   });
 
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'extension/manifest.json')));

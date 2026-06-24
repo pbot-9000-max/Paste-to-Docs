@@ -1,0 +1,14 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "globals": {
+    "chrome": "readonly",
+    "ClipboardItem": "readonly"
+  },
+  "extends": "eslint:recommended",
+  "rules": {
+    "no-control-regex": "off"
+  }
+}

@@ -169,7 +169,7 @@ async function run() {
     const link = w.document.querySelector('.github-link'); assert.equal(link.target, '_blank'); assert.match(link.rel, /noopener/);
   });
   await check('WEB copy does not promise unsupported nested lists', () => {
-    const card = [...w.document.querySelectorAll('.feature-card')].find(node => node.textContent.includes('Lists with real depth'));
+    const card = [...w.document.querySelectorAll('.feature-card')].find(node => node.textContent.includes('No flat text'));
     assert.doesNotMatch(card.textContent, /Nested/);
   });
   await check('WEB security boundary escapes raw HTML', () => {

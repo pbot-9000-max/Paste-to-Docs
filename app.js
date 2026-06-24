@@ -558,6 +558,10 @@
   }
 
   function readFile(file) {
+    if (!/\.(md|txt|markdown)$/i.test(file.name)) {
+      alert('Please choose a .md, .txt, or .markdown file.');
+      return;
+    }
     var reader = new FileReader();
     reader.onload = function (e) {
       input.value = e.target.result;

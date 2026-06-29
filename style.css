@@ -533,14 +533,16 @@ h1 {
 }
 
 .Preview-actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  justify-content: center;
   gap: 12px;
   margin-top: 12px;
 }
 
 .copy-btn {
+  grid-column: 2;
+  justify-self: center;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -585,7 +587,8 @@ h1 {
 }
 
 .copy-status {
-  min-width: 92px;
+  grid-column: 3;
+  justify-self: start;
   text-align: left;
   font-size: 13px;
   font-weight: 500;

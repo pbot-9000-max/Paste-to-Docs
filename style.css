@@ -467,7 +467,7 @@ h1 {
 .Preview-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 12px;
   margin-top: 12px;
 }
@@ -1385,4 +1385,3 @@ footer {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-

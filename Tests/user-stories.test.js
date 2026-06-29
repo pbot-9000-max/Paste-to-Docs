@@ -31,6 +31,16 @@ function webApp() {
   window.URL.createObjectURL = () => 'blob:test';
   window.URL.revokeObjectURL = () => {};
   window.HTMLAnchorElement.prototype.click = function () { window.__download = this.download; };
+  window.__clipboardWrites = [];
+  window.__clipboardTextWrites = [];
+  Object.defineProperty(window.navigator, 'clipboard', {
+    configurable: true,
+    value: {
+      write: async items => { window.__clipboardWrites.push(items); },
+      writeText: async text => { window.__clipboardTextWrites.push(text); },
+    },
+  });
+  window.ClipboardItem = class { constructor(value) { this.value = value; } };
   const source = expose(fs.readFileSync(path.join(root, 'app.js'), 'utf8'),
     ['markdownToHtml', 'buildDocx', 'extractRuns', 'buildDocxTable']);
   window.eval(source);
@@ -188,6 +198,20 @@ async function run() {
   });
   await check('WEB-027 GitHub link is isolated', () => {
     const link = w.document.querySelector('.github-link'); assert.equal(link.target, '_blank'); assert.match(link.rel, /noopener/);
+  });
+  await check('WEB copy preview writes rich clipboard output', async () => {
+    input.value = '| A |\n|---|\n| **B** |';
+    input.dispatchEvent(new w.Event('input'));
+    w.document.getElementById('copyBtn').click();
+    await new Promise(resolve => setTimeout(resolve));
+    const item = w.__clipboardWrites[0][0];
+    const html = await item.value['text/html'].text();
+    const plain = await item.value['text/plain'].text();
+    assert.match(html, /<table/);
+    assert.match(html, /<strong[^>]*>B<\/strong>/);
+    assert.doesNotMatch(html, /#1E293B/);
+    assert.equal(plain.includes('B'), true);
+    assert.equal(w.document.querySelector('.copy-btn-text').textContent, 'Copied');
   });
   await check('WEB-029 Chrome extension CTA opens installation instructions', () => {
     const link = [...w.document.querySelectorAll('a')].find(node => node.textContent === 'Chrome extension');

@@ -464,6 +464,66 @@ h1 {
   display: block;
 }
 
+.Preview-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  color: var(--violet-700);
+  background: var(--surface);
+  border: 1px solid var(--violet-300);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+}
+
+.copy-btn:hover {
+  background: var(--violet-50);
+  border-color: var(--violet-400);
+  transform: translateY(-1px);
+}
+
+.copy-btn:active {
+  transform: translateY(0);
+}
+
+.copy-btn.copied {
+  color: #047857;
+  border-color: #10b981;
+  background: #ecfdf5;
+}
+
+.copy-btn.failed {
+  color: #b91c1c;
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.copy-btn-icon {
+  flex-shrink: 0;
+}
+
+.copy-status {
+  min-width: 92px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-500);
+}
+
 /* ── Word-like preview (unstyled mode) ─────────────────── */
 
 .preview-panel.doc-preview {
@@ -1135,6 +1195,19 @@ footer {
     grid-template-columns: 1fr;
   }
 
+  .Preview-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .copy-btn {
+    width: 100%;
+  }
+
+  .copy-status {
+    min-width: 0;
+    text-align: center;
+  }
 
 }
 
@@ -1272,6 +1345,28 @@ footer {
   border-color: #292524;
 }
 
+[data-theme="dark"] .copy-btn {
+  color: var(--violet-300);
+  border-color: var(--violet-500);
+}
+
+[data-theme="dark"] .copy-btn:hover {
+  background: #1c1917;
+  border-color: var(--violet-400);
+}
+
+[data-theme="dark"] .copy-btn.copied {
+  color: #6ee7b7;
+  border-color: #059669;
+  background: #052e2b;
+}
+
+[data-theme="dark"] .copy-btn.failed {
+  color: #fecaca;
+  border-color: #dc2626;
+  background: #3f1212;
+}
+
 /* ── Loading state ───────────────────────────────────── */
 
 #downloadBtn.loading {
@@ -1290,5 +1385,4 @@ footer {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
-
 

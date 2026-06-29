@@ -600,8 +600,12 @@
   var styleToggle = document.getElementById('styleToggle');
   var preview = document.getElementById('preview');
   var previewArea = document.querySelector('.Preview-area');
+  var copyBtn = document.getElementById('copyBtn');
+  var copyBtnText = copyBtn.querySelector('.copy-btn-text');
+  var copyStatus = document.getElementById('copyStatus');
 
   var styled = false;
+  var copyResetTimer = null;
 
   // ── Theme toggle ─────────────────────────────────────────────────────────
 
@@ -629,12 +633,87 @@
 
   function updatePreview() {
     var text = input.value.trim();
+    resetCopyState();
     if (!text) { preview.innerHTML = ''; preview.className = 'preview-panel'; previewArea.style.display = 'none'; return; }
     S = isDarkMode ? S_dark : S_light;
     preview.className = 'preview-panel' + (styled ? '' : ' doc-preview');
     var html = markdownToHtml(text, styled);
     preview.innerHTML = html;
     previewArea.style.display = 'block';
+  }
+
+  function resetCopyState() {
+    clearTimeout(copyResetTimer);
+    copyBtn.classList.remove('copied', 'failed');
+    copyBtnText.textContent = 'Copy for Google Docs';
+    copyStatus.textContent = '';
+  }
+
+  function buildClipboardHtml() {
+    var previousStyles = S;
+    S = S_light;
+    try {
+      return markdownToHtml(input.value.trim(), styled);
+    } finally {
+      S = previousStyles;
+    }
+  }
+
+  function getPlainTextFromHtml(html) {
+    var holder = document.createElement('div');
+    holder.innerHTML = html;
+    return holder.innerText || holder.textContent || '';
+  }
+
+  function legacyCopyHtml(html) {
+    var holder = document.createElement('div');
+    holder.contentEditable = 'true';
+    holder.style.position = 'fixed';
+    holder.style.left = '-9999px';
+    holder.style.top = '0';
+    holder.innerHTML = html;
+    document.body.appendChild(holder);
+
+    var selection = window.getSelection();
+    var range = document.createRange();
+    range.selectNodeContents(holder);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    var copied = document.execCommand('copy');
+    selection.removeAllRanges();
+    document.body.removeChild(holder);
+    if (!copied) throw new Error('Clipboard copy was blocked');
+  }
+
+  async function copyPreviewToClipboard() {
+    if (!preview.innerHTML) return;
+    resetCopyState();
+
+    var htmlFragment = buildClipboardHtml();
+    var html = '<!doctype html><html><body>' + htmlFragment + '</body></html>';
+    var plain = getPlainTextFromHtml(htmlFragment);
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.write && window.ClipboardItem) {
+        await navigator.clipboard.write([new ClipboardItem({
+          'text/html': new Blob([html], { type: 'text/html' }),
+          'text/plain': new Blob([plain], { type: 'text/plain' }),
+        })]);
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(plain);
+      } else {
+        legacyCopyHtml(htmlFragment);
+      }
+      copyBtn.classList.add('copied');
+      copyBtnText.textContent = 'Copied';
+      copyStatus.textContent = 'Ready to paste';
+      copyResetTimer = setTimeout(resetCopyState, 2500);
+    } catch (err) {
+      copyBtn.classList.add('failed');
+      copyBtnText.textContent = 'Copy failed';
+      copyStatus.textContent = err.message || 'Clipboard blocked';
+      copyResetTimer = setTimeout(resetCopyState, 3500);
+    }
   }
 
   function readFile(file) {
@@ -698,6 +777,8 @@
     styled = styleToggle.checked;
     updatePreview();
   });
+
+  copyBtn.addEventListener('click', copyPreviewToClipboard);
 
   // ── Input / conversion ─────────────────────────────────
 

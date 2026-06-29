@@ -1,0 +1,16 @@
+Here's the table, ordered roughly by priority.
+
+| Improvement | Notes / Insights from Sakana Fugu | Effort | Priority | Notes / Remarks |
+|---|---|---|---|---|
+| **Explicit access lists for agent handoffs** | • Each agent gets only the prior outputs it needs, not the full transcript<br>• Keeps outputs focused and controls cost<br>• Defines exactly what travels at each handoff | Medium | High | Already aligned with current direction; formalize it in the agent comms protocol |
+| **Two-tier memory model** | • Isolate agents within one workflow so they reason independently<br>• Share an artifact ledger across workflows so agents don't redo work<br>• Rule: isolate to preserve thinking, share to avoid redundancy | High | High | Highest-leverage item for multi-week goals; underpins several rows below |
+| **Orchestration collapse prevention** | • The first agent to act can lock in the path for everyone else<br>• Keep parallel attempts isolated; share only through deliberate handoff | Low | High | Falls out of the two-tier memory model; a design rule for parallel sub-goals (paid, organic, influencer running at once) |
+| **Verifier step + termination conditions** | • Explicit ACCEPT or REVISE before a sub-goal is marked done<br>• Send back with a diagnosis on REVISE<br>• Hard iteration budget so loops can't run forever | Medium | High | Maps to the workflow validation gates already planned; complements human approval gates |
+| **Difficulty-adaptive decomposition** | • More steps and agents for hard sub-goals, fewer for simple ones<br>• Conductor averaged ~3 steps even when 5 were allowed<br>• Avoid one fixed template for everything | Medium | Medium | Orchestrator sizes the agent footprint to complexity and stakes |
+| **Dynamic synthesizer** | • Pick the best agent to combine results, per task<br>• A fixed synthesizer bottlenecks quality on tasks outside its strength | Medium | Medium | The Orchestrator shouldn't always be the one to synthesize (e.g., Analyst owns a channel review, Creative owns a creative call) |
+| **Phase-based agent pairing** | • Alternate agents by phase: one builds, another reviews and debugs at critical points<br>• Bring in a specialist for one specific moment | Medium | Medium | Strong fit for the Engineering loop; pair an implementer agent with a reviewer pass |
+| **Model-routing substrate + eval-driven priors** | • Route by capability (math vs debugging vs writing)<br>• Build a soft model-preference distribution from logged performance, no clean reward needed | High | Low | Matches the existing longer-term roadmap; learns from logged outcomes rather than a reward signal |
+
+Two notes on how I scored things: the top four cluster tightly because three of them (collapse prevention, verifier gates, and to a degree access lists) either fall out of or reinforce the two-tier memory model, so building that one well unlocks the rest cheaply. The bottom row is High effort / Low priority on purpose, since it is already framed as a strategic longer-term decision rather than something the prototype needs now.
+
+Want this as a CSV or dropped into the orchestration doc so you can fold it straight into the planning backlog?

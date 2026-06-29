@@ -81,16 +81,27 @@
     const rows = lines.filter(function (l) { return !/^\|[-:| ]+\|$/.test(l.trim()); });
     if (!rows.length) return '';
     var cells = function (r) { return r.split('\\|').join('\x00').split('|').map(function (c) { return c.trim().replace(/\x00/g, '|'); }).filter(Boolean); };
+    var cellHtml = function (c) {
+      var lines = String(c).split(/<br>|<br\/>|<br \/>/g);
+      if (lines.length > 1 && lines.every(function (part) { return /^[ \t]*(?:[-*+] |• )/.test(part); })) {
+        var ulStyle = styled ? ' style="' + S.ul + '"' : '';
+        var liStyle = styled ? ' style="' + S.li + '"' : '';
+        return '<ul' + ulStyle + '>' + lines.map(function (part) {
+          return '<li' + liStyle + '>' + inline(part.replace(/^[ \t]*(?:[-*+] |• )/, ''), styled) + '</li>';
+        }).join('') + '</ul>';
+      }
+      return lines.map(function (part) { return inline(part, styled); }).join('<br>');
+    };
     var head = rows[0];
     var body = rows.slice(1);
     var tableStyle = styled ? ' style="' + S.table + '"' : '';
     var thStyle = styled ? ' style="' + S.th + '"' : '';
     var tdStyle = styled ? ' style="' + S.td + '"' : '';
     var tdAltStyle = styled ? ' style="' + S.tdAlt + '"' : '';
-    var ths = cells(head).map(function (c) { return '<th' + thStyle + '>' + inline(c, styled) + '</th>'; }).join('');
+    var ths = cells(head).map(function (c) { return '<th' + thStyle + '>' + cellHtml(c) + '</th>'; }).join('');
     var trs = body.map(function (r, idx) {
       var cellStyle = (idx % 2 === 1) ? tdAltStyle : tdStyle;
-      return '<tr>' + cells(r).map(function (c) { return '<td' + cellStyle + '>' + inline(c, styled) + '</td>'; }).join('') + '</tr>';
+      return '<tr>' + cells(r).map(function (c) { return '<td' + cellStyle + '>' + cellHtml(c) + '</td>'; }).join('') + '</tr>';
     }).join('');
     return '<table' + tableStyle + '><thead><tr>' + ths + '</tr></thead><tbody>' + trs + '</tbody></table>';
   }
@@ -204,6 +215,13 @@
   var ut = docx.UnderlineType;
   var wt = docx.WidthType;
   var bs = docx.BorderStyle;
+  var TABLE_CELL_PADDING_TWIPS = 144;
+  var TABLE_CELL_MARGINS = {
+    top: TABLE_CELL_PADDING_TWIPS,
+    bottom: TABLE_CELL_PADDING_TWIPS,
+    left: TABLE_CELL_PADDING_TWIPS,
+    right: TABLE_CELL_PADDING_TWIPS,
+  };
 
   function buildDocx(html, styled) {
     var parser = new DOMParser();
@@ -471,6 +489,77 @@
     });
   }
 
+  function buildTableCellParagraphs(td, styled, cellIsHeader) {
+    var base = styled ? {
+      font: 'Calibri',
+      size: 22,
+      color: cellIsHeader ? '0F172A' : '374151',
+      bold: !!cellIsHeader,
+    } : undefined;
+    var paragraphs = [];
+    var inlineNodes = [];
+
+    function paragraphFor(node, options) {
+      var runs = options && options.runs
+        ? options.runs
+        : node.nodeType === 3
+          ? [new docx.TextRun(Object.assign({}, base || {}, { text: node.textContent }))]
+          : extractRuns(node, base);
+      return new docx.Paragraph({
+        spacing: { before: 40, after: 40 },
+        indent: options && options.indent,
+        children: runs,
+      });
+    }
+
+    function flushInlineNodes() {
+      if (!inlineNodes.length) return;
+      var wrapper = td.ownerDocument.createElement('span');
+      inlineNodes.forEach(function (node) { wrapper.appendChild(node.cloneNode(true)); });
+      paragraphs.push(paragraphFor(wrapper));
+      inlineNodes = [];
+    }
+
+    function listParagraphs(listEl, ordered) {
+      var lis = listEl.querySelectorAll(':scope > li');
+      for (var i = 0; i < lis.length; i++) {
+        var prefix = ordered ? (i + 1) + '. ' : '\u2022 ';
+        var prefixRun = styled
+          ? new docx.TextRun(Object.assign({}, base, {
+            text: prefix,
+            font: ordered ? 'Calibri' : 'Symbol',
+          }))
+          : new docx.TextRun(ordered ? { text: prefix } : { text: prefix, font: 'Symbol' });
+        paragraphs.push(new docx.Paragraph({
+          spacing: { before: 40, after: 40 },
+          indent: { left: 360, hanging: 180 },
+          children: [prefixRun].concat(extractRuns(lis[i], base)),
+        }));
+      }
+    }
+
+    for (var node = td.firstChild; node; node = node.nextSibling) {
+      if (node.nodeType === 3 && !node.textContent.trim()) continue;
+      if (node.nodeType === 1) {
+        var tag = node.tagName.toLowerCase();
+        if (tag === 'ul' || tag === 'ol') {
+          flushInlineNodes();
+          listParagraphs(node, tag === 'ol');
+          continue;
+        }
+        if (tag === 'br') {
+          flushInlineNodes();
+          continue;
+        }
+      }
+      inlineNodes.push(node);
+    }
+    flushInlineNodes();
+
+    if (!paragraphs.length) paragraphs.push(paragraphFor(td));
+    return paragraphs;
+  }
+
   function buildRow(tr, colWidth, styled) {
     var cells = [];
     var isHeader = tr.parentElement && (tr.parentElement.tagName === 'THEAD');
@@ -480,15 +569,8 @@
       var cellIsHeader = td.tagName === 'TH';
       if (styled) {
         cells.push(new docx.TableCell({
-          children: [new docx.Paragraph({
-            spacing: { before: 40, after: 40 },
-            children: extractRuns(td, {
-              font: 'Calibri',
-              size: 22,
-              color: cellIsHeader ? '0F172A' : '374151',
-              bold: !!cellIsHeader,
-            }),
-          })],
+          children: buildTableCellParagraphs(td, styled, cellIsHeader),
+          margins: TABLE_CELL_MARGINS,
           shading: cellIsHeader
             ? { type: st.CLEAR, fill: 'F1F5F9' }
             : isAlt
@@ -497,10 +579,8 @@
         }));
       } else {
         cells.push(new docx.TableCell({
-          children: [new docx.Paragraph({
-            spacing: { before: 40, after: 40 },
-            children: extractRuns(td),
-          })],
+          children: buildTableCellParagraphs(td, styled, cellIsHeader),
+          margins: TABLE_CELL_MARGINS,
           shading: cellIsHeader ? { type: st.CLEAR, fill: 'F8F9FA' } : undefined,
         }));
       }

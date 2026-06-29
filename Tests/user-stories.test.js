@@ -123,6 +123,27 @@ async function run() {
     const out = w.__test.markdownToHtml('| A | B |\n|---|---|\n| x \\| y | z |', false);
     assert.match(out, /<table/); assert.match(out, /x \| y/);
   });
+  await check('WEB table cell br bullets become list items', () => {
+    const out = w.__test.markdownToHtml('| Tasks |\n|---|\n| - one<br>- two |', false);
+    assert.match(out, /<td><ul><li>one<\/li><li>two<\/li><\/ul><\/td>/);
+    assert.doesNotMatch(out, /&lt;br/);
+  });
+  await check('WEB DOCX table cells use 0.1in padding', () => {
+    const expected = { top: 144, bottom: 144, left: 144, right: 144 };
+    const plain = w.__test.buildDocx(w.__test.markdownToHtml('| A |\n|---|\n| B |', false), false)[0];
+    const styledTable = w.__test.buildDocx(w.__test.markdownToHtml('| A |\n|---|\n| B |', true), true)[0];
+    assert.equal(JSON.stringify(plain.rows[1].children[0].margins), JSON.stringify(expected));
+    assert.equal(JSON.stringify(styledTable.rows[1].children[0].margins), JSON.stringify(expected));
+  });
+  await check('WEB DOCX table cell bullets become separate paragraphs', () => {
+    const html = w.__test.markdownToHtml('| Tasks |\n|---|\n| - one<br>- two |', false);
+    const table = w.__test.buildDocx(html, false)[0];
+    const cell = table.rows[1].children[0];
+    assert.equal(cell.children.length, 2);
+    assert.equal(cell.children[0].children[0].text, '\u2022 ');
+    assert.equal(cell.children[0].children[1].text, 'one');
+    assert.equal(cell.children[1].children[1].text, 'two');
+  });
   await check('WEB-021/022 rule and escapes', () => {
     assert.match(w.__test.markdownToHtml('---', false), /<hr/);
     assert.match(w.__test.markdownToHtml('\\*literal\\*', false), /<p>\*literal\*<\/p>/);

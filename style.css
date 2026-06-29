@@ -415,6 +415,74 @@ h1 {
   color: var(--gray-600);
 }
 
+.beautify-info {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.beautify-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--gray-400);
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: help;
+  transition: color 0.2s, background 0.2s;
+}
+
+.beautify-info-btn:hover,
+.beautify-info-btn:focus-visible {
+  color: var(--violet-600);
+  background: var(--violet-50);
+  outline: none;
+}
+
+.beautify-tooltip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  z-index: 10;
+  width: min(280px, calc(100vw - 32px));
+  padding: 10px 12px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  color: var(--gray-700);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: left;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition: opacity 0.16s, transform 0.16s;
+}
+
+.beautify-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 10px;
+  height: 10px;
+  background: var(--surface);
+  border-right: 1px solid var(--gray-200);
+  border-bottom: 1px solid var(--gray-200);
+  transform: translate(-50%, -5px) rotate(45deg);
+}
+
+.beautify-info:hover .beautify-tooltip,
+.beautify-info:focus-within .beautify-tooltip {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
 /* ── Preview area ──────────────────────────────────────── */
 
 .Preview-area {
@@ -1330,6 +1398,23 @@ footer {
 
 [data-theme="dark"] .step-connector {
   background: linear-gradient(90deg, #3b2a5e, #5b21b6);
+}
+
+[data-theme="dark"] .beautify-info-btn:hover,
+[data-theme="dark"] .beautify-info-btn:focus-visible {
+  color: var(--violet-300);
+  background: #1c1917;
+}
+
+[data-theme="dark"] .beautify-tooltip {
+  border-color: #292524;
+  background: #151311;
+  color: var(--gray-600);
+}
+
+[data-theme="dark"] .beautify-tooltip::after {
+  background: #151311;
+  border-color: #292524;
 }
 
 [data-theme="dark"] footer {

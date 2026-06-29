@@ -115,7 +115,7 @@ async function run() {
     assert.equal(button.disabled, false); assert.equal(w.document.getElementById('charCount').textContent, '7');
   });
   await check('WEB-004/011/012 live block preview', () => {
-    assert.match(preview.innerHTML, /<h1>Hello<\/h1>/);
+    assert.match(preview.innerHTML, /<h1[^>]*>Hello<\/h1>/);
     assert.match(w.__test.markdownToHtml('text', false), /<p>text<\/p>/);
   });
   await check('WEB-013/014/015 inline formatting', () => {
@@ -159,8 +159,16 @@ async function run() {
     assert.match(w.__test.markdownToHtml('\\*literal\\*', false), /<p>\*literal\*<\/p>/);
   });
   await check('WEB-005 beautify toggle', () => {
-    const toggle = w.document.getElementById('styleToggle'); toggle.checked = true;
-    toggle.dispatchEvent(new w.Event('change')); assert.match(preview.innerHTML, /style=/);
+    const toggle = w.document.getElementById('styleToggle');
+    assert.equal(toggle.checked, true);
+    assert.match(preview.innerHTML, /style=/);
+    assert.equal(w.document.getElementById('beautifyTooltip').textContent.includes('polished spacing'), true);
+    toggle.checked = false;
+    toggle.dispatchEvent(new w.Event('change'));
+    assert.doesNotMatch(preview.innerHTML, /style=/);
+    toggle.checked = true;
+    toggle.dispatchEvent(new w.Event('change'));
+    assert.match(preview.innerHTML, /style=/);
   });
   await check('WEB-006/007 theme persistence', () => {
     w.document.getElementById('themeToggle').click();

@@ -57,10 +57,20 @@
 
       <div class="style-toggle">
         <label class="switch">
-          <input type="checkbox" id="styleToggle">
+          <input type="checkbox" id="styleToggle" checked>
           <span class="slider"></span>
         </label>
         <span class="toggle-label">Beautify</span>
+        <span class="beautify-info">
+          <button class="beautify-info-btn" type="button" aria-label="What Beautify does" aria-describedby="beautifyTooltip">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="16" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+          </button>
+          <span id="beautifyTooltip" class="beautify-tooltip" role="tooltip">Adds polished spacing, colors, table styling, and code block treatment to preview, copy, and DOCX output.</span>
+        </span>
       </div>
 
       <div class="actions">

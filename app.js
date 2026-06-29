@@ -604,7 +604,7 @@
   var copyBtnText = copyBtn.querySelector('.copy-btn-text');
   var copyStatus = document.getElementById('copyStatus');
 
-  var styled = false;
+  var styled = styleToggle.checked;
   var copyResetTimer = null;
 
   // ── Theme toggle ─────────────────────────────────────────────────────────

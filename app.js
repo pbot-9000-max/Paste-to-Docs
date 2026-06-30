@@ -7,6 +7,44 @@
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
+  function escapeAttr(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function decodeHref(value) {
+    return String(value)
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&');
+  }
+
+  function safeHref(rawHref, baseUrl) {
+    var href = decodeHref(rawHref).trim();
+    if (!/^[a-z][\w+.-]*:/i.test(href)) return null;
+    try {
+      var url = new URL(href, baseUrl || window.location.href);
+      if (url.protocol === 'http:' || url.protocol === 'https:' || url.protocol === 'mailto:') {
+        return url.href;
+      }
+    } catch (_) {
+      return null;
+    }
+    return null;
+  }
+
+  function renderSafeLink(labelHtml, rawHref, attrs) {
+    var href = safeHref(rawHref);
+    if (!href) return labelHtml;
+    return '<a href="' + escapeAttr(href) + '"' + (attrs || '') + '>' + labelHtml + '</a>';
+  }
+
   // ── Style constants ─────────────────────────────────────────────────────
 
   var S_light = {
@@ -71,8 +109,7 @@
       .replace(/~~(.+?)~~/g, '<del>$1</del>')
       .replace(/`([^`]+)`/g, '<code' + codeStyle + '>$1</code>')
       .replace(/\[([^\]]+)\]\(([^)]+)\)/g, function (_, label, href) {
-        if (/^[a-z][\w+.-]*:/i.test(href) && !/^(https?|mailto):/i.test(href)) return label;
-        return '<a href="' + href.replace(/&quot;/g, '%22') + '"' + aStyle + '>' + label + '</a>';
+        return renderSafeLink(label, href, aStyle);
       })
       .replace(/\x00(\d+)\x00/g, function (_, index) { return escaped[index]; });
   }

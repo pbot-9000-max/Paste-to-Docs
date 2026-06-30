@@ -36,6 +36,44 @@
     blockquote: 'border-left:3px solid #dadce0;margin:0;padding:0 0 0 16px;color:#5f6368',
   };
 
+  function escapeAttr(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function decodeHref(value) {
+    return String(value)
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&');
+  }
+
+  function safeHref(rawHref, baseUrl) {
+    const href = decodeHref(rawHref).trim();
+    if (!/^[a-z][\w+.-]*:/i.test(href)) return null;
+    try {
+      const url = new URL(href, baseUrl || window.location.href);
+      if (url.protocol === 'http:' || url.protocol === 'https:' || url.protocol === 'mailto:') {
+        return url.href;
+      }
+    } catch (_) {
+      return null;
+    }
+    return null;
+  }
+
+  function renderSafeLink(labelHtml, rawHref, attrs = '') {
+    const href = safeHref(rawHref);
+    if (!href) return labelHtml;
+    return `<a href="${escapeAttr(href)}"${attrs}>${labelHtml}</a>`;
+  }
+
   // ── Source Detection ───────────────────────────────────────────────────────
 
   /**
@@ -143,8 +181,7 @@
       // Links — skip internal anchors
       case 'a': {
         const href = node.getAttribute('href') ?? '';
-        if (!href || href.startsWith('#')) return ch();
-        return `<a href="${String(href).replace(/"/g,'&quot;').replace(/'/g,'&#39;')}">${ch()}</a>`;
+        return renderSafeLink(ch(), href);
       }
 
       // Inline code vs. code block
@@ -296,8 +333,7 @@
       .replace(/~~(.+?)~~/g,                    '<del>$1</del>')
       .replace(/`([^`]+)`/g,                    `<code style="${S.inlineCode}">$1</code>`)
       .replace(/\[([^\]]+)\]\(([^)]+)\)/g,      (_, label, href) => {
-        if (/^[a-z][\w+.-]*:/i.test(href) && !/^(https?|mailto):/i.test(href)) return label;
-        return `<a href="${href.replace(/&quot;/g, '%22')}">${label}</a>`;
+        return renderSafeLink(label, href);
       })
       .replace(/\x00(\d+)\x00/g, (_, index) => escaped[index]);
   }

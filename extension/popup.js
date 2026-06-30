@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await chrome.storage.sync.set({ enabled: isEnabled });
     setStatus(isEnabled);
 
-    // Notify all open Google Docs tabs
+    // Requires the tabs permission so the popup can find open Docs tabs by URL.
     const tabs = await chrome.tabs.query({ url: 'https://docs.google.com/document/*' });
     for (const tab of tabs) {
       chrome.tabs.sendMessage(tab.id, { type: 'SET_ENABLED', enabled: isEnabled }).catch(() => {});

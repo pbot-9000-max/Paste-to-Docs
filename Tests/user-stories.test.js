@@ -232,6 +232,42 @@ async function run() {
   await check('WEB security boundary escapes raw HTML', () => {
     assert.match(w.__test.markdownToHtml('<img src=x onerror=alert(1)>', false), /&lt;img/);
   });
+  await check('WEB allows only safe markdown link schemes', () => {
+    const out = w.__test.markdownToHtml('[https](https://example.com?a=1&b=2) [http](http://example.com) [mail](mailto:test@example.com)', false);
+    const holder = w.document.createElement('div');
+    holder.innerHTML = out;
+    const links = [...holder.querySelectorAll('a')];
+    assert.equal(links.length, 3);
+    assert.equal(links[0].getAttribute('href'), 'https://example.com/?a=1&b=2');
+    assert.equal(links[1].getAttribute('href'), 'http://example.com/');
+    assert.equal(links[2].getAttribute('href'), 'mailto:test@example.com');
+  });
+  await check('WEB rejects markdown link attribute injection', () => {
+    const samples = [
+      '[x](" onmouseover="alert(1))',
+      '[x](https://example.com" onmouseover="alert(1))',
+      '[x](javascript:alert(1))',
+      '[x](data:text/html,<b>x</b>)',
+      '[x](http://)',
+      '[x](not-a-url)',
+    ];
+    for (const sample of samples) {
+      const out = w.__test.markdownToHtml(sample, false);
+      assert.doesNotMatch(out, /<a\b|onmouseover=|javascript:|data:text/i);
+    }
+  });
+  await check('WEB copied HTML rejects unsafe markdown links', async () => {
+    input.value = '[x](" onmouseover="alert(1))\n\n[y](javascript:alert(1))';
+    input.dispatchEvent(new w.Event('input'));
+    w.__clipboardWrites.length = 0;
+    w.document.getElementById('copyBtn').click();
+    await new Promise(resolve => setTimeout(resolve));
+    const item = w.__clipboardWrites[0][0];
+    const html = await item.value['text/html'].text();
+    assert.doesNotMatch(html, /<a\b|onmouseover=|javascript:/i);
+    assert.match(html, />x/);
+    assert.match(html, />y/);
+  });
   await check('WEB styled DOCX preserves inline emphasis', () => {
     const children = w.__test.buildDocx('<p><strong>bold</strong></p>', true);
     assert.equal(children[0].children[0].bold, true);
@@ -257,6 +293,40 @@ async function run() {
   });
   await check('EXT security boundary escapes raw HTML', () => {
     assert.match(e.markdownToHtml('<img src=x onerror=alert(1)>'), /&lt;img/);
+  });
+  await check('EXT allows only safe markdown link schemes', () => {
+    const out = e.markdownToHtml('[https](https://example.com) [http](http://example.com) [mail](mailto:test@example.com)');
+    const holder = ext.dom.window.document.createElement('div');
+    holder.innerHTML = out;
+    const links = [...holder.querySelectorAll('a')];
+    assert.equal(links.length, 3);
+    assert.equal(links[0].getAttribute('href'), 'https://example.com/');
+    assert.equal(links[1].getAttribute('href'), 'http://example.com/');
+    assert.equal(links[2].getAttribute('href'), 'mailto:test@example.com');
+  });
+  await check('EXT rejects markdown link attribute injection', () => {
+    const samples = [
+      '[x](" onmouseover="alert(1))',
+      '[x](https://example.com" onmouseover="alert(1))',
+      '[x](javascript:alert(1))',
+      '[x](data:text/html,<b>x</b>)',
+      '[x](http://)',
+      '[x](not-a-url)',
+    ];
+    for (const sample of samples) {
+      const out = e.markdownToHtml(sample);
+      assert.doesNotMatch(out, /<a\b|onmouseover=|javascript:|data:text/i);
+    }
+  });
+  await check('EXT HTML cleaning rejects unsafe links', () => {
+    const clean = e.htmlToClean(
+      '<a href="javascript:alert(1)">bad</a><a href="data:text/html,x">data</a><a href="mailto:test@example.com">mail</a>',
+      ''
+    );
+    assert.doesNotMatch(clean, /javascript:|data:text|href="bad"|href="data"/i);
+    assert.match(clean, /bad/);
+    assert.match(clean, /data/);
+    assert.match(clean, /href="mailto:test@example.com"/);
   });
   await check('EXT-003 ordinary plain paste passes through', async () => {
     let prevented = false;

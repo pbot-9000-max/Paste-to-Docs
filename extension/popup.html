@@ -3,6 +3,20 @@
 <head>
   <meta charset="utf-8">
   <title>paste-to-docs</title>
+  <script>
+    performance.mark('html-start');
+    document.addEventListener('DOMContentLoaded', function() {
+      performance.mark('dom-content-loaded');
+    });
+    window.addEventListener('load', function() {
+      performance.mark('page-loaded');
+      var nav = performance.getEntriesByType('navigation')[0];
+      if (nav) {
+        console.log('[perf] DOMContentLoaded: ' + nav.domContentLoadedEventEnd.toFixed(1) + 'ms');
+        console.log('[perf] Load event:       ' + nav.loadEventEnd.toFixed(1) + 'ms');
+      }
+    });
+  </script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 

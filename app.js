@@ -625,6 +625,52 @@
     return new docx.TableRow({ children: cells });
   }
 
+  // ── Lazy docx loader ──────────────────────────────────────────────────────
+
+  var docxLoadPromise = null;
+  var DOCX_PRIMARY = 'https://cdn.jsdelivr.net/npm/docx@9.7.1/dist/index.iife.js';
+  var DOCX_FALLBACK = 'https://unpkg.com/docx@9.7.1/dist/index.iife.js';
+  var DOCX_TIMEOUT = 10000;
+
+  function loadDocxScript(src) {
+    return new Promise(function (resolve, reject) {
+      if (typeof docx !== 'undefined' && docx && docx.Paragraph) { resolve(); return; }
+      var s = document.createElement('script');
+      s.src = src;
+      s.async = true;
+      var timedOut = false;
+      var timer = setTimeout(function () {
+        timedOut = true;
+        reject(new Error('Timeout loading docx from ' + src));
+      }, DOCX_TIMEOUT);
+      s.onload = function () {
+        clearTimeout(timer);
+        if (!timedOut) resolve();
+      };
+      s.onerror = function () {
+        clearTimeout(timer);
+        if (!timedOut) reject(new Error('Failed to load docx from ' + src));
+      };
+      document.head.appendChild(s);
+    });
+  }
+
+  function loadDocxLazy() {
+    if (docxLoadPromise) return docxLoadPromise;
+    docxLoadPromise = new Promise(function (resolve, reject) {
+      loadDocxScript(DOCX_PRIMARY)
+        .then(resolve)
+        .catch(function () {
+          return loadDocxScript(DOCX_FALLBACK).then(resolve);
+        })
+        .catch(function () {
+          docxLoadPromise = null;
+          reject(new Error('Failed to load the document converter. Please check your connection and try again.'));
+        });
+    });
+    return docxLoadPromise;
+  }
+
   // ── UI ───────────────────────────────────────────────────────────────────
 
   var input = document.getElementById('input');
@@ -834,10 +880,12 @@
     if (!text) return;
 
     btn.classList.add('loading');
-    btnText.textContent = 'Converting\u2026';
+    btnText.textContent = 'Loading converter\u2026';
     btn.disabled = true;
 
     try {
+      await loadDocxLazy();
+      btnText.textContent = 'Converting\u2026';
       var html = markdownToHtml(text, styled);
       var children = buildDocx(html, styled);
 
